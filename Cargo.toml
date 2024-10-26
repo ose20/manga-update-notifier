@@ -1,0 +1,36 @@
+# cargo run -p notifier などで実行する
+# [package] セクションがない仮想 workspace としている
+[workspace]
+resolver = "2"
+members = ["manga", "discord", "adapter", "kernel", "shared", "registry", "notifier", "batch"]
+
+[workspace.package]
+edition = "2021"
+publish = false
+license = "MIT"
+
+# プロジェクトルートであるこの階層ですべて?の依存を定義する
+# 各メンバーモジュールはこの一覧から on/off を選択することでバージョンなどを一括で揃えられる
+[workspace.dependencies]
+adapter = { path = "./adapter" }
+anyhow = "1.0.89"
+async-trait = "0.1.74"
+batch = { path = "./batch" }
+chrono = { version = "0.4.26", default-features = false, features = ["serde"] }
+clap = { version = "4.5", features = ["derive"] }
+derive-new = "0.6.0"
+discord = { path = "./discord" }
+dotenv = "0.15"
+futures = "0.3"
+kernel = { path = "./kernel" }
+manga = { path = "./manga" }
+notifier = { path = "./notifier" }
+registry = { path = "./registry" }
+serde = { version = "1.0.174", features = ["derive"] }
+# deprecated なので、いつか代替を探す
+serde_yaml = "0.9"
+serenity = { version = "0.12.2", features = ["client", "rustls_backend"] }
+shared = { path = "./shared" }
+sqlx = { version = "0.8.2", features = ["macros", "postgres", "migrate", "runtime-tokio" ] }
+thirtyfour = "0.34.0"
+tokio = { version = "1.40.0", features = ["rt", "macros", "full"] }
