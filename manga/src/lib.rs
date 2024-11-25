@@ -119,7 +119,13 @@ async fn check_update_one(
             manga.title()
         ))?;
     let old_episode = manga_data.episode;
-    let latest_episode = manga.crawl_latest_episode(manga.url()).await?;
+    let latest_episode = manga.crawl_latest_episode(manga.url()).await.map_err(|e| {
+        anyhow!(
+            "err: 最新話のクロール\ntitle: {}\ncontent: {:#?}",
+            manga.title(),
+            e
+        )
+    })?;
 
     if old_episode == latest_episode {
         Ok(None)
