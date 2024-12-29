@@ -14,6 +14,7 @@ use checker::one_punch_man::OnePunchMan;
 use checker::rta_kaerenai::RtaKaerenai;
 use checker::satanophany::Satanophany;
 use checker::sentai_taboo::SentaiTaboo;
+use checker::shujin_tensei::ShujinTensei;
 use checker::tensei_coliseum::TenseiColiseum;
 use checker::toaru_anbu::ToaruAnbu;
 use checker::yondome::Yondome;
@@ -101,6 +102,9 @@ async fn register_manga_crawlers(app_registry: &AppRegistry) -> Vec<Result<Box<d
 
     let sentai_taboo = SentaiTaboo::try_init(app_registry).await;
     result.push(sentai_taboo.map(IntoManga::into));
+
+    let shujin_tensei = ShujinTensei::try_init(app_registry).await;
+    result.push(shujin_tensei.map(IntoManga::into));
 
     result
 }
