@@ -16,6 +16,7 @@ pub mod one_punch_man;
 pub mod rta_kaerenai;
 pub mod satanophany;
 pub mod sentai_taboo;
+pub mod shujin_tensei;
 pub mod tensei_coliseum;
 pub mod toaru_anbu;
 pub mod yondome;
