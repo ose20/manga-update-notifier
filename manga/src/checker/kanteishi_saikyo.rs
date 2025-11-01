@@ -1,15 +1,13 @@
-use std::{thread, time::Duration};
-
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use registry::AppRegistry;
-use thirtyfour::By;
 
-use crate::{aux::extract_manga_info, chromedriver::get_driver};
+use crate::aux::extract_manga_info;
 
 use super::{Manga, MangaCrawler, MangaInfo};
 
 const SHORT_TITLE: &str = "kanteishi_saikyo";
+const RSS_URL: &str = "https://pocket.shonenmagazine.com/rss/series/13933686331618251446";
 
 pub struct KanteishiSaikyo {
     title: String,
@@ -33,38 +31,22 @@ impl KanteishiSaikyo {
 
 #[async_trait]
 impl MangaCrawler for KanteishiSaikyo {
-    async fn crawl_latest_episode(&self, url: &str) -> Result<String> {
-        let driver = get_driver().await?;
+    async fn crawl_latest_episode(&self, _url: &str) -> Result<String> {
+        let response = reqwest::get(RSS_URL).await?;
+        let content = response.bytes().await?;
 
-        driver.goto(url).await?;
+        let channel = rss::Channel::read_from(&content[..])?;
 
-        let scrolling_script = r#"
-        // scroll down the page 10 times
-        const scrolls = 10
-        let scrollCount = 0
+        if let Some(first_item) = channel.items().first() {
+            let title = first_item
+                .title
+                .clone()
+                .ok_or(anyhow!("titleが取得できませんでした"))?;
 
-        // scroll down and then wait for 0.5s
-        const scrollInterval = setInterval(() => {
-            window.scrollBy(0, document.body.scrollHeight / 10)
-            scrollCount++
-
-            if (scrollCount == scrolls) {
-                clearInterval(scrollInterval)
-            }
-        }, 500)
-    "#;
-
-        driver.execute(scrolling_script, Vec::new()).await?;
-        thread::sleep(Duration::from_secs(2));
-
-        let latest_episode = driver
-            .find(By::Css(".series-episode-list-title"))
-            .await?
-            .text()
-            .await?;
-
-        driver.quit().await?;
-        Ok(latest_episode)
+            Ok(title)
+        } else {
+            Err(anyhow!("items.firstが存在しない"))
+        }
     }
 }
 

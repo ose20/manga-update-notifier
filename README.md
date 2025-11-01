@@ -1,4 +1,15 @@
 
+## 動かし方
+
+実行
+```sh
+cargo make run-notifier
+```
+
+DBに登録（冪等性あり）
+```sh
+cargo make run-batch persist-existence
+```
 
 ## memo
 - dbのpostgresもdockerで立てる
@@ -36,3 +47,9 @@
 - deleteバッチも欲しい
   - 削除版の冪等性ファイルととらえてもよい
     - ここに記載されたデータをもしあるなら消す（なくてもエラーにならない）
+
+## todo
+- 新規追加タイトル
+  - とある心理掌握
+  - 盾の勇者
+  - リゼロ

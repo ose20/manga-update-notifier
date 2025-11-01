@@ -13,12 +13,15 @@ pub mod kuga;
 pub mod maou_rebellion;
 pub mod matoseihei;
 pub mod one_punch_man;
+pub mod rezero_ch4;
 pub mod rta_kaerenai;
 pub mod satanophany;
 pub mod sentai_taboo;
+pub mod shield_yusha;
 pub mod shujin_tensei;
 pub mod tensei_coliseum;
 pub mod toaru_anbu;
+pub mod toaru_shinri;
 pub mod yondome;
 
 #[async_trait]
