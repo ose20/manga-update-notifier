@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use anyhow::{anyhow, Ok, Result};
 use thirtyfour::{ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
 
@@ -10,11 +12,14 @@ pub async fn get_driver() -> Result<WebDriver> {
 
     // あとで環境変数に変えたい
     // driverConfigあたりをsharedで作る？
-    caps.set_binary("/home/ose20/app/chrome-linux64/chrome")?;
+    // caps.set_binary("/home/ose20/app/chrome-linux64/chrome")?;
 
-    let webdriver = WebDriver::new("http://localhost:9515", caps)
+    let webdriver = WebDriver::new("http://localhost:4444", caps)
         .await
         .map_err(|e| anyhow!("{}", e))?;
+    webdriver
+        .set_page_load_timeout(Duration::from_secs(300))
+        .await?;
 
     Ok(webdriver)
 }

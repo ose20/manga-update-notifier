@@ -34,3 +34,5 @@ shared = { path = "./shared" }
 sqlx = { version = "0.8.2", features = ["macros", "postgres", "migrate", "runtime-tokio" ] }
 thirtyfour = "0.34.0"
 tokio = { version = "1.40.0", features = ["rt", "macros", "full"] }
+reqwest = { version = "0.12", features = ["rustls-tls"] }
+rss = "2"

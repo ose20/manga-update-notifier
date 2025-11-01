@@ -1,15 +1,13 @@
-use std::{thread, time::Duration};
-
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use registry::AppRegistry;
-use thirtyfour::By;
 
-use crate::{aux::extract_manga_info, chromedriver::get_driver, impl_manga_info, impl_try_init};
+use crate::{aux::extract_manga_info, impl_manga_info, impl_try_init};
 
 use super::{Manga, MangaCrawler, MangaInfo};
 
 const SHORT_TITLE: &str = "kuga";
+const RSS_URL: &str = "https://viewer.heros-web.com/rss/series/10834108156632461068";
 
 #[derive(Debug)]
 pub struct Kuga {
@@ -24,43 +22,61 @@ impl Kuga {
 
 #[async_trait]
 impl MangaCrawler for Kuga {
-    async fn crawl_latest_episode(&self, url: &str) -> Result<String> {
-        let driver = get_driver().await?;
-        driver.goto(url).await?;
-
-        let scrolling_script = r#"
-        // scroll down the page 10 times
-        const scrolls = 10
-        let scrollCount = 0
-
-        // scroll down and then wait for 0.5s
-        const scrollInterval = setInterval(() => {
-            window.scrollBy(0, document.body.scrollHeight / 15)
-            scrollCount++
-
-            if (scrollCount == scrolls) {
-                clearInterval(scrollInterval)
+    async fn crawl_latest_episode(&self, _url: &str) -> Result<String> {
+        let response = {
+            let mut retry_cnt = 0;
+            loop {
+                match reqwest::get(RSS_URL).await {
+                    Ok(response) => break response,
+                    Err(e) => {
+                        retry_cnt += 1;
+                        if retry_cnt > 5 {
+                            return Err(e.into());
+                        } else {
+                            continue;
+                        }
+                    }
+                }
             }
-        }, 500)
-    "#;
+        };
+        let content = response.bytes().await?;
 
-        driver.execute(scrolling_script, Vec::new()).await?;
-        thread::sleep(Duration::from_secs(2));
+        let channel = rss::Channel::read_from(&content[..])?;
 
-        let episode = driver
-            .find(By::Css(".series-episode-list-title-wrapper"))
-            .await?
-            .find(By::Css(".series-episode-list-title"))
-            .await?
-            .text()
-            .await?;
+        if let Some(first_item) = channel.items().first() {
+            let title = first_item
+                .title
+                .clone()
+                .ok_or(anyhow!("titleが取得できませんでした"))?;
 
-        driver.quit().await?;
-
-        Ok(episode)
+            Ok(title)
+        } else {
+            Err(anyhow!("itmes.firstが存在しない"))
+        }
     }
 }
 
 impl_manga_info!(Kuga);
 
 impl Manga for Kuga {}
+
+#[cfg(test)]
+mod test {
+    use anyhow::Result;
+
+    use crate::checker::{kuga::Kuga, MangaCrawler};
+
+    #[tokio::test]
+    async fn test_crawl() -> Result<()> {
+        let kuga = Kuga {
+            title: "kuga".into(),
+            url: "".into(),
+            short_title: "kuga".into(),
+        };
+
+        let title = kuga.crawl_latest_episode("dummy").await?;
+        println!("title = {title}");
+
+        Ok(())
+    }
+}

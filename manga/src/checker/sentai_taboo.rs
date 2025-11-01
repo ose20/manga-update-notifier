@@ -49,9 +49,9 @@ impl MangaCrawler for SentaiTaboo {
         thread::sleep(Duration::from_millis(3000));
 
         let episode = driver
-            .find(By::Css(".series-episode-list-title-wrapper"))
-            .await?
-            .find(By::Tag("h4"))
+            .find(By::Css(
+                "h4[class^='index-module--series-episode-list-title']",
+            ))
             .await?
             .text()
             .await?;

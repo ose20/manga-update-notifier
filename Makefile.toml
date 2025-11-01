@@ -62,7 +62,8 @@ args = [
 # notifier/batch 対応済み(2)
 [tasks.run-notifier]
 extend = "set-env-local"
-dependencies = ["before-build", "start-chromedriver"]
+# dependencies = ["before-build", "start-chromedriver"]
+dependencies = ["before-build"]
 command = "cargo"
 args = ["run", "--release", "-p", "notifier", "${@}"]
 

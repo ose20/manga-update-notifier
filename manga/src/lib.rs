@@ -11,16 +11,18 @@ use checker::kuga::Kuga;
 use checker::maou_rebellion::MaouRebellion;
 use checker::matoseihei::Matoseihei;
 use checker::one_punch_man::OnePunchMan;
+use checker::rezero_ch4::RezeroCh4;
 use checker::rta_kaerenai::RtaKaerenai;
 use checker::satanophany::Satanophany;
 use checker::sentai_taboo::SentaiTaboo;
+use checker::shield_yusha::ShieldYusha;
 use checker::shujin_tensei::ShujinTensei;
 use checker::tensei_coliseum::TenseiColiseum;
 use checker::toaru_anbu::ToaruAnbu;
+use checker::toaru_shinri::ToaruShinri;
 use checker::yondome::Yondome;
 use checker::IntoManga;
 use checker::Manga;
-use futures::future;
 use registry::AppRegistry;
 
 pub mod aux;
@@ -33,16 +35,17 @@ pub async fn check_update(
 ) -> Vec<Result<Option<(String, String, String)>>> {
     // crawler を impl した各漫画 struct をひとつずつ作っていって Vec<impl crawler> をつくる
     let manga_list = register_manga_crawlers(app_registry).await;
-    // それぞれに対して、impl Manga -> Result<Option<String>>
-    let update_futures = manga_list.into_iter().map(|manga_result| async {
-        // Result<Box<dyn Manga>> -> Result<Option<(String, String)>>
-        match manga_result {
-            Ok(manga) => check_update_one(manga, app_registry).await,
-            Err(e) => Err(e),
-        }
-    });
 
-    future::join_all(update_futures).await
+    let mut results = vec![];
+
+    for manga in manga_list {
+        match manga {
+            Ok(manga) => results.push(check_update_one(manga, app_registry).await),
+            Err(e) => results.push(Err(e)),
+        }
+    }
+
+    results
 }
 
 // 新しい漫画を追加したときはここで DI する
@@ -105,6 +108,15 @@ async fn register_manga_crawlers(app_registry: &AppRegistry) -> Vec<Result<Box<d
 
     let shujin_tensei = ShujinTensei::try_init(app_registry).await;
     result.push(shujin_tensei.map(IntoManga::into));
+
+    let toaru_shinri = ToaruShinri::try_init(app_registry).await;
+    result.push(toaru_shinri.map(IntoManga::into));
+
+    let shield_yusha = ShieldYusha::try_init(app_registry).await;
+    result.push(shield_yusha.map(IntoManga::into));
+
+    let rezero_ch4 = RezeroCh4::try_init(app_registry).await;
+    result.push(rezero_ch4.map(IntoManga::into));
 
     result
 }

@@ -13,3 +13,5 @@ thirtyfour.workspace = true
 registry.workspace = true
 shared.workspace = true
 tokio.workspace = true
+reqwest.workspace = true
+rss.workspace = true

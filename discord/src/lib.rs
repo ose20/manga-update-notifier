@@ -24,17 +24,3 @@ impl Channel {
             .map_err(|e| anyhow!("{}", e))
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[tokio::test]
-    async fn test() {
-        //let token =
-        //let channel_id =
-
-        //let channel = Channel::new(channel_id.parse().unwrap(), token);
-        //channel.print("hello from my rust code!").await.unwrap();
-    }
-}
