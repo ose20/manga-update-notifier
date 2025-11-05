@@ -1,40 +1,14 @@
-services:
-  notifier:
-    build:
-      context: .
-      dockerfile: notifier/Dockerfile
-      args:
-        DATABASE_URL: ${DATABASE_URL}
-      network: host
-    environment:
-      HOST: ${HOST}
-      PORT: ${PORT}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_NAME: ${DATABASE_NAME}
-    depends_on:
-      - postgres
-      
-  batch:
-    build:
-      context: .
-      dockerfile: batch/Dockerfile
-      args:
-        DATABASE_URL: ${DATABASE_URL}
-      network: host
-    environment:
-      HOST: ${HOST}
-      PORT: ${PORT}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_NAME: ${DATABASE_NAME}
-    depends_on:
-      - postgres
+x-selenium-common: &selenium-common
+  image: selenium/standalone-chrome:latest
+  shm_size: 2gb
+  environment:
+    - SE_NODE_SESSION_TIMEOUT=1800
+    # ここを増やすことで並列化もできるが、/dev/shm・CPU・メモリを奪い合うので不安定化するかも
+    # なので 1 にして複数立てる
+    - SE_NODE_MAX_SESSIONS=1
+  restart: unless-stopped
 
+services:
   postgres:
     image: postgres:15
     command: postgres -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on
@@ -53,6 +27,23 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+
+  selemium0:
+    <<: *selenium-common
+    container_name: selemium0
+    ports: ["4444:4444", "7900:7900"]
+  selemium1:
+    <<: *selenium-common
+    container_name: selemium1
+    ports: ["4445:4444", "7901:7900"]
+  selemium2:
+    <<: *selenium-common
+    container_name: selemium2
+    ports: ["4446:4444", "7902:7900"]
+  selemium3:
+    <<: *selenium-common
+    container_name: selemium3
+    ports: ["4447:4444", "7903:7900"]
 
 volumes:
   db:

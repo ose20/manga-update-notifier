@@ -2,60 +2,29 @@ use anyhow::Result;
 
 pub struct AppConfig {
     pub database: DatabaseConfig,
-    pub discord: DiscordConfig,
 }
 
 impl AppConfig {
     pub fn new() -> Result<Self> {
         let database = DatabaseConfig {
-            host: std::env::var("DATABASE_HOST")?,
-            port: std::env::var("DATABASE_PORT")?.parse()?,
-            username: std::env::var("DATABASE_USERNAME")?,
-            password: std::env::var("DATABASE_PASSWORD")?,
-            database: std::env::var("DATABASE_NAME")?,
+            host: std::env::var("DATABASE_HOST").expect("DATABASE_HOST must be set"),
+            port: std::env::var("DATABASE_PORT")
+                .expect("DATABASE_PORT must be set")
+                .parse()
+                .expect("DATABASE_PORT must be a number"),
+            username: std::env::var("DATABASE_USERNAME").expect("DATABASE_USERNAME must be set"),
+            password: std::env::var("DATABASE_PASSWORD").expect("DATABASE_PASSWORD must be set"),
+            database: std::env::var("DATABASE_NAME").expect("DATABASE_NAME must be set"),
         };
-
-        dotenv::from_filename("secret.env").ok();
-        let discord = DiscordConfig {
-            token: dotenv::var("TOKEN")?,
-            main_ch_id: dotenv::var("MAIN_CH_ID")?.parse()?,
-            err_ch_id: dotenv::var("ERR_CH_ID")?.parse()?,
-        };
-
-        Ok(Self { database, discord })
-    }
-
-    // テスト用
-    pub fn new_dev() -> Result<Self> {
-        let database = DatabaseConfig {
-            host: "localhost".into(),
-            port: 5434,
-            username: "app".into(),
-            password: "passwd".into(),
-            database: "app".into(),
-        };
-
-        dotenv::from_filename("secret.env").ok();
-        let discord = DiscordConfig {
-            token: dotenv::var("TOKEN")?,
-            main_ch_id: dotenv::var("MAIN_CH_ID")?.parse()?,
-            err_ch_id: dotenv::var("ERR_CH_ID")?.parse()?,
-        };
-
-        Ok(Self { database, discord })
+        Ok(AppConfig { database })
     }
 }
 
+#[derive(Debug)]
 pub struct DatabaseConfig {
     pub host: String,
     pub port: u16,
     pub username: String,
     pub password: String,
     pub database: String,
-}
-
-pub struct DiscordConfig {
-    pub token: String,
-    pub main_ch_id: u64,
-    pub err_ch_id: u64,
 }

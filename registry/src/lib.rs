@@ -1,22 +1,34 @@
 use std::sync::Arc;
 
-use adapter::{database::connect_database_with, repository::manga::MangaRepositoryImpl};
-use kernel::repository::manga::MangaRepository;
+use domain::manga::repository::MangaRepository;
+use infra::repository::{connect_database_with, manga::MangaRepositoryImpl};
 use shared::config::AppConfig;
 
 #[derive(Clone)]
-pub struct AppRegistry {
-    manga_repository: Arc<dyn MangaRepository>,
+pub struct AppRegistryImpl {
+    book_repository: Arc<dyn MangaRepository>,
 }
 
-impl AppRegistry {
-    pub fn new(config: &AppConfig) -> Self {
-        let pool = connect_database_with(&config.database);
-        let manga_repository = Arc::new(MangaRepositoryImpl::new(pool.clone()));
-        Self { manga_repository }
-    }
+impl AppRegistryImpl {
+    pub fn new(app_config: AppConfig) -> Self {
+        let pool = connect_database_with(&app_config.database);
+        let manga_repo = MangaRepositoryImpl::new(pool);
 
-    pub fn manga_repository(&self) -> Arc<dyn MangaRepository> {
-        self.manga_repository.clone()
+        Self {
+            book_repository: Arc::new(manga_repo),
+        }
     }
 }
+
+#[mockall::automock]
+pub trait AppRegistryExt {
+    fn manga_repository(&self) -> Arc<dyn MangaRepository>;
+}
+
+impl AppRegistryExt for AppRegistryImpl {
+    fn manga_repository(&self) -> Arc<dyn MangaRepository> {
+        self.book_repository.clone()
+    }
+}
+
+pub type AppRegistry = Arc<dyn AppRegistryExt + Send + Sync + 'static>;

@@ -150,12 +150,41 @@ run_task = "test"
 
 ### Migration
 
+[tasks.compose-purge-db]
+extend = "set-env-local"
+script = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Composeのプロジェクト名を決定（.envのCOMPOSE_PROJECT_NAMEが優先。なければカレントディレクトリ名）
+project="${COMPOSE_PROJECT_NAME:-$(basename "$PWD")}"
+vol="${project}_db"
+
+echo "==> Project: ${project}"
+echo "==> Target volume: ${vol}"
+
+# コンテナ停止＆削除（コンテナに紐づく匿名ボリュームも削除）
+docker compose stop postgres || true
+docker compose rm -f -v postgres || true
+
+# named volume(db)を削除
+if docker volume inspect "${vol}" >/dev/null 2>&1; then
+  echo "==> Removing volume ${vol}"
+  docker volume rm "${vol}"
+else
+  echo "==> Volume ${vol} not found (already removed?)"
+fi
+
+echo "==> Done."
+'''
+
+
 [tasks.migrate]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
 script = '''
 #!/bin/bash
-until sqlx migrate run --source adapter/migrations; do
+until sqlx migrate run --source infra/migrations; do
     sleep 1
 done
 '''
@@ -164,7 +193,7 @@ done
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
 command = "sqlx"
-args = ["${@}", "--source", "adapter/migrations"]
+args = ["${@}", "--source", "infra/migrations"]
 
 [tasks.psql]
 extend = "set-env-local"
