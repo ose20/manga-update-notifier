@@ -6,3 +6,10 @@ publish.workspace = true
 license.workspace = true
 
 [dependencies]
+application.workspace = true
+registry.workspace = true
+shared.workspace = true
+
+tokio.workspace = true
+anyhow.workspace = true
+tracing.workspace = true

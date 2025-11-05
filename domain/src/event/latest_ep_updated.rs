@@ -1,7 +1,7 @@
 use crate::manga::{MangaEpisode, MangaTitle};
 
 #[derive(Debug)]
-pub struct DetectLastEpUpdatedEvent {
+pub struct DetectLastEpUpdated {
     pub title: MangaTitle,
     pub url: url::Url,
     pub episode: MangaEpisode,
