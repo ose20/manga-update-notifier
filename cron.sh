@@ -9,4 +9,4 @@ LOG_FILE="/var/log/manga_update_notifier/notifier.log"
 
 CARGO_PATH="$HOME/.cargo/bin/cargo"
 
-"$CARGO_PATH" make run-notifier && "$CARGO_PATH" make stop-chromedriver >> "$LOG_FILE" 2>&1
+# "$CARGO_PATH" make run-notifier && "$CARGO_PATH" make stop-chromedriver >> "$LOG_FILE" 2>&1

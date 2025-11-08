@@ -1,0 +1,13 @@
+[package]
+name = "application"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+domain.workspace = true
+
+url.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true

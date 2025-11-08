@@ -1,23 +1,12 @@
 
 ## 動かし方
 
-実行
-```sh
-cargo make run-notifier
-```
-
-DBに登録（冪等性あり）
-```sh
-cargo make run-batch persist-existence
-```
 
 ## memo
 - dbのpostgresもdockerで立てる
 - volumeを作ったので、containerが削除されてもデータが消えることはない
     - 消えるのはdocker desktopを消したときかな？
     - なので低頻度でsql dumpみたいなのをしてバックアップファイルを取っておくのがよさそう
-- 通常のmanga-update-notifierと、新規漫画データの追加や更新を担うbatchの2つのバイナリを用意する
-    - 利用するbinaryが同じなので、kernel, adapterあたりを再利用できるのとdockerも共通化できてうれしいため
 - rust-book-managerだとbin/app.rsでpoolの取得をしていたけど、これはregistryに任せていい気がする
     - appConfigはapp全体の設定なのでapp.rsで取る必要性はわかる
 
@@ -28,28 +17,20 @@ cargo make run-batch persist-existence
 - sqlx migrate add -r start --source adapter/migrations
 
 
-### リファクタ案
-- episode とか title とかが全部 String なので名前を変えたい
-
-
-### 運用でやりたいこと
-- 途中でurlが変わったときに更新したい
-- 漫画データを追加したい
-
-
-### 備忘
-- crawl処理が安定しなく、一度目で失敗しても二度目で成功することもある
-
-
-### batch設計
-- title, short_title, urlは冪等性を担保するためのファイルで一括管理したい
-  - 新しくデータを加えるときや、urlが変わったときはここを使う
-- deleteバッチも欲しい
-  - 削除版の冪等性ファイルととらえてもよい
-    - ここに記載されたデータをもしあるなら消す（なくてもエラーにならない）
-
-## todo
-- 新規追加タイトル
-  - とある心理掌握
-  - 盾の勇者
-  - リゼロ
+## Todo
+- registryの調整
+  - 起動するバイナリによって必要な要素が違うことの反映
+    - 特に server 起動するときに chromedriver を起動したくない
+- ↑の問題を解決する前にselenium container消えない問題の原因究明
+  - run-hoge したあとに compose-down しても selenium が消えず、docker rm -f しないといけないのはなぜ
+    - 上の問題解決しちゃっても大丈夫かも
+      - だめだ
+        - run-notifier2連続は大丈夫だけどrun-server -> run-notifierだと registry が作れない
+          - もしかして greceful shutdown してないから説ある？
+        - run-notifier後でもcompose-downで消えないけど、そのあとrun-notifierしても別に困らない
+          - run-notifier -> run-serverはいけるので、やっぱりgraceful shutdownしてないからかも
+- webdriverが起動しきる前にやってる
+2025-11-08T21:51:12.758363633+09:00 ERROR batch/src/main.rs:10: Application error: The WebDriver request returned an error: error sending request for url (http://localhost:4444/session)
+  - healthcheck設定してるけどうまくいってないっぽい
+- 最適化
+  - rssを提供しているサイトはwebdriver使わないのでpoolから拝借しないようにできるとうれしい
