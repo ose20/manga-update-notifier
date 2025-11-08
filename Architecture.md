@@ -75,3 +75,13 @@
   - apiサーバーとして起動する際のエンドポイント
 - batch
   - 本丸となる漫画更新検査など、一回きりの実行のエンドポイントを集める
+
+# registry考察
+- registryにapplicationのusecaseから依存させる循環依存が生じる
+  - application/port にたいして registry から依存するため
+- 解決
+  - application/usecase から registry 丸ごと見たいというのがよくない
+    - usecase の各 API には registry の要素から必要なものだけ引数で受け取るようにした
+  - registry は最も外側のモジュールから使う
+    - サーバー立てるときの api 
+    - バッチ実行するときの batch

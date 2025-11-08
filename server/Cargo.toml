@@ -5,4 +5,23 @@ edition.workspace = true
 publish.workspace = true
 license.workspace = true
 
+[[bin]]
+# 実行は cargo run -p server
+name = "server"
+path = "src/main.rs"
+
 [dependencies]
+domain.workspace = true
+shared.workspace = true
+registry.workspace = true
+application.workspace = true
+
+axum.workspace = true
+axum-extra.workspace = true
+derive-new.workspace = true
+anyhow.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tokio-stream.workspace = true
+serde.workspace = true
+serde_json.workspace = true

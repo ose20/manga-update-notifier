@@ -1,7 +1,12 @@
 use std::str::FromStr;
 
+use serde::Deserialize;
+
 // sqlx::Type は infra 層の都合なのでちょっともれちゃってる
-#[derive(Debug, Clone, PartialEq, Eq, Hash, sqlx::Type)]
+// Deserialize もルーター部分で Axum がパスから取り出すときに使うためのものなので、
+// 本当は server 層に起きたい(それだけのために型を分ける手間をさぼっている)
+#[derive(Debug, Clone, PartialEq, Eq, Hash, sqlx::Type, Deserialize)]
+#[serde(transparent)] // 中身(uuid)としてそのままデシリアライズされるようになる
 pub struct MangaId(uuid::Uuid);
 
 impl MangaId {

@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 domain.workspace = true
 shared.workspace = true
+application.workspace = true
 
 sqlx.workspace = true
 anyhow.workspace = true
@@ -15,3 +16,8 @@ derive-new.workspace = true
 async-trait.workspace = true
 url.workspace = true
 uuid.workspace = true
+serenity.workspace = true
+thirtyfour.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+rss.workspace = true

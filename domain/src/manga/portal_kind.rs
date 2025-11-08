@@ -35,3 +35,22 @@ impl FromStr for PortalKind {
         }
     }
 }
+
+// これも domain 層に置いていいのか問題がある
+// ただこれは fromstr の逆変換になっているはずで(ほんと?)、その場合は両者を同じ場所に置いておきたくなる
+impl std::fmt::Display for PortalKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            PortalKind::WebAce => "WebAce",
+            PortalKind::KimiComi => "KimiComi",
+            PortalKind::KadoComi => "KadoComi",
+            PortalKind::TonarinoYJ => "TonarinoYJ",
+            PortalKind::HerosWeb => "HerosWeb",
+            PortalKind::JumpPlus => "JumpPlus",
+            PortalKind::YoungMagazine => "YoungMagazine",
+            PortalKind::ComicDays => "ComicDays",
+            PortalKind::ComicFuz => "ComicFuz",
+        };
+        write!(f, "{}", s)
+    }
+}

@@ -10,3 +10,25 @@ pub struct DetectFetchError {
     pub url: url::Url,
     pub error_message: String,
 }
+
+impl DetectFetchError {
+    pub fn new(title: MangaTitle, url: url::Url, error_message: String) -> Self {
+        Self {
+            title,
+            url,
+            error_message,
+        }
+    }
+}
+
+impl std::fmt::Display for DetectFetchError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Failed to fetch latest episode for manga '{}' ({}): {}",
+            self.title.inner_ref(),
+            self.url,
+            self.error_message
+        )
+    }
+}

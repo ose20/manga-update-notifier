@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[async_trait]
-pub trait MangaRepository {
+pub trait MangaRepository: Send + Sync {
     async fn create_manga(&self, command: CreateManga) -> Result<()>;
     async fn update_manga(&self, command: UpdateManga) -> Result<()>;
     async fn delete_manga(&self, command: DeleteManga) -> Result<()>;

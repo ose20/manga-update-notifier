@@ -9,6 +9,7 @@ license.workspace = true
 domain.workspace = true
 shared.workspace = true
 infra.workspace = true
+application.workspace = true
 
 anyhow.workspace = true
 mockall.workspace = true

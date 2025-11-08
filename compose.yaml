@@ -8,6 +8,8 @@ x-selenium-common: &selenium-common
     - SE_NODE_MAX_SESSIONS=1
   restart: unless-stopped
 
+x-selenium-healthcheck: &selenium-healthcheck
+
 services:
   postgres:
     image: postgres:15
@@ -15,7 +17,7 @@ services:
     ports:
       - ${DATABASE_PORT_OUTER}:${DATABASE_PORT_INNER}
     volumes:
-      - db:/var/lib/postgres/data
+      - db:/var/lib/postgresql/data
     environment:
       # この環境変数があると、ユーザとパスワードとデフォルトデータベース名が自動で作成される
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -28,22 +30,50 @@ services:
       retries: 5
       start_period: 30s
 
-  selemium0:
+  selenium0: # health checkいれるぞ (後で) 
     <<: *selenium-common
-    container_name: selemium0
+    container_name: selenium0
+    profiles: ["selenium"]
     ports: ["4444:4444", "7900:7900"]
-  selemium1:
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4444/status | grep -q '\"ready\":true'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+  selenium1:
     <<: *selenium-common
-    container_name: selemium1
+    profiles: ["selenium"]
+    container_name: selenium1
     ports: ["4445:4444", "7901:7900"]
-  selemium2:
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4445/status | grep -q '\"ready\":true'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+  selenium2:
     <<: *selenium-common
-    container_name: selemium2
+    profiles: ["selenium"]
+    container_name: selenium2
     ports: ["4446:4444", "7902:7900"]
-  selemium3:
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4446/status | grep -q '\"ready\":true'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+  selenium3:
     <<: *selenium-common
-    container_name: selemium3
+    profiles: ["selenium"]
+    container_name: selenium3
     ports: ["4447:4444", "7903:7900"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4447/status | grep -q '\"ready\":true'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
 
 volumes:
   db:

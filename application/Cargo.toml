@@ -7,7 +7,6 @@ license.workspace = true
 
 [dependencies]
 domain.workspace = true
-registry.workspace = true
 
 url.workspace = true
 anyhow.workspace = true

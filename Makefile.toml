@@ -1,6 +1,8 @@
 [config]
 default_to_workspace = false
 
+# トップレベル env は特別な意味を持つ
+# すべてのタスクで共通の環境変数として使われる
 [env]
 HOST = "0.0.0.0"
 PORT = 8080
@@ -9,8 +11,10 @@ DATABASE_PASSWORD = "passwd"
 DATABASE_NAME = "app"
 DATABASE_PORT_OUTER = 5434
 DATABASE_PORT_INNER = 5432
+NOTIFY_DISCORD = "TRUE"
 
 # Docker Composeのネットワーク内でのDB等への接続情報
+# tasks.hoge.env はタスクごとの環境変数として使われる
 [tasks.set-env-docker.env]
 DATABASE_HOST = "postgres"
 DATABASE_PORT = "${DATABASE_PORT_INNER}"
@@ -27,19 +31,10 @@ DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?
 run_task = [
     { name = [
         "compose-up-db",
+        "compose-up-chromedriver",
         "migrate",
     ] },
 ]
-
-[tasks.start-chromedriver]
-script = '''
-#!/bin/bash
-chromedriver --port=9515 &
-'''
-
-[tasks.stop-chromedriver]
-command = "pkill"
-args = ["chromedriver"]
 
 # notifier/batch 対応済み(1)
 [tasks.compose-build-notifier]
@@ -65,15 +60,15 @@ extend = "set-env-local"
 # dependencies = ["before-build", "start-chromedriver"]
 dependencies = ["before-build"]
 command = "cargo"
-args = ["run", "--release", "-p", "notifier", "${@}"]
+args = ["run", "--release", "-p", "batch", "${@}"]
 
 
 # notifier/batch 対応済み(2)
-[tasks.run-batch]
+[tasks.run-server]
 extend = "set-env-local"
 dependencies = ["before-build"]
 command = "cargo"
-args = ["run", "-p", "batch", "${@}"]
+args = ["run", "-p", "server", "${@}"]
 
 # notifier/batch 対応済み(3)
 [tasks.run-notifier-in-docker]
@@ -223,6 +218,11 @@ args = [
 extend = "set-env-docker"
 command = "docker"
 args = ["compose", "${@}"]
+
+[tasks.compose-up-chromedriver]
+extend = "set-env-docker"
+command = "docker"
+args = ["compose", "--profile", "selenium", "up", "-d"]
 
 [tasks.compose-up-db]
 extend = "set-env-docker"

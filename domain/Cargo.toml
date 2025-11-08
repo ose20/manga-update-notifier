@@ -12,3 +12,4 @@ sqlx.workspace = true
 anyhow.workspace = true
 url.workspace = true
 async-trait.workspace = true
+serde_json.workspace = true

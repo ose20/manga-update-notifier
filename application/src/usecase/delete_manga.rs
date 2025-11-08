@@ -1,7 +1,11 @@
-use anyhow::Result;
-use domain::command;
-use registry::AppRegistry;
+use std::sync::Arc;
 
-pub async fn execute(_registry: AppRegistry, _command: command::DeleteManga) -> Result<()> {
-    todo!()
+use anyhow::Result;
+use domain::{command, manga::repository::MangaRepository};
+
+pub async fn execute<R>(repo: Arc<R>, command: command::DeleteManga) -> Result<()>
+where
+    R: MangaRepository + ?Sized,
+{
+    repo.delete_manga(command).await
 }
