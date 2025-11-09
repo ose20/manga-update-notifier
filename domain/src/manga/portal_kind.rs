@@ -11,6 +11,7 @@ pub enum PortalKind {
     YoungMagazine,
     ComicDays,
     ComicFuz,
+    ComicZenon,
 }
 
 // 考察:
@@ -31,6 +32,7 @@ impl FromStr for PortalKind {
             "YoungMagazine" => Ok(PortalKind::YoungMagazine),
             "ComicDays" => Ok(PortalKind::ComicDays),
             "ComicFuz" => Ok(PortalKind::ComicFuz),
+            "ComicZenon" => Ok(PortalKind::ComicZenon),
             _ => Err(anyhow::anyhow!("Unknown portal kind: {}", s)),
         }
     }
@@ -50,6 +52,7 @@ impl std::fmt::Display for PortalKind {
             PortalKind::YoungMagazine => "YoungMagazine",
             PortalKind::ComicDays => "ComicDays",
             PortalKind::ComicFuz => "ComicFuz",
+            PortalKind::ComicZenon => "ComicZenon",
         };
         write!(f, "{}", s)
     }

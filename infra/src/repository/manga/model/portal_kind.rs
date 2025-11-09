@@ -22,6 +22,7 @@ impl From<PortalKind> for PortalKindValue {
             PortalKind::YoungMagazine => "YoungMagazine",
             PortalKind::ComicDays => "ComicDays",
             PortalKind::ComicFuz => "ComicFuz",
+            PortalKind::ComicZenon => "ComicZenon",
         };
         PortalKindValue(s.to_string())
     }
