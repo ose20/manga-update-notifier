@@ -1,9 +1,6 @@
 use anyhow::Result;
 use application::command::FetchLatestEpCommand;
 use domain::manga::MangaEpisode;
-use thirtyfour::WebDriver;
-
-use crate::fetcher::portal_kind::EpCrawler;
 
 pub struct ComicDaysCrawler {
     command: FetchLatestEpCommand,
@@ -13,12 +10,10 @@ impl ComicDaysCrawler {
     pub fn new(command: FetchLatestEpCommand) -> Self {
         Self { command }
     }
-}
 
-#[async_trait::async_trait]
-impl EpCrawler for ComicDaysCrawler {
-    async fn crawl(&self, _driver: &WebDriver) -> Result<MangaEpisode> {
-        // ComicDays 用のクローリングロジックをここに実装する
+    // RSS を使うやつは webdriver いらないのでこっちで実装
+    // 他の同様のやつもこっちに寄せるなりしたい
+    pub async fn crawl(&self) -> Result<MangaEpisode> {
         let response = {
             let mut retry_count = 0;
             loop {

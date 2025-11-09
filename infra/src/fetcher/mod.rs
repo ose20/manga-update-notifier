@@ -63,6 +63,10 @@ impl LatestEpisodeFetcher for LatestEpisodeFetcherImpl {
                 let crawler = portal_kind::jump_plus::JumpPlusCrawler::new(command);
                 self.webdriver_pool.with_driver(crawler).await
             }
+            PortalKind::ComicZenon => {
+                let crawler = portal_kind::comic_zenon::ComicDaysCrawler::new(command);
+                crawler.crawl().await
+            }
         }
     }
 }

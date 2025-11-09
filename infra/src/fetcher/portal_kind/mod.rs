@@ -4,6 +4,7 @@ use thirtyfour::WebDriver;
 
 pub mod comic_days;
 pub mod comic_fuz;
+pub mod comic_zenon;
 pub mod heros_web;
 pub mod jump_plus;
 pub mod kado_comi;
