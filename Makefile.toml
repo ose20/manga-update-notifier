@@ -36,53 +36,17 @@ run_task = [
     ] },
 ]
 
-# notifier/batch 対応済み(1)
-[tasks.compose-build-notifier]
-extend = "set-env-local"
-command = "docker"
-args = [
-  "compose", "build", "notifier",
-  "--build-arg", "BUILDKIT_INLINE_CACHE=1", "${@}"
-]
-
-# notifier/batch 対応済み(1)
-[tasks.compose-build-batch]
-extend = "set-env-local"
-command = "docker"
-args = [
-  "compose", "build", "batch",
-  "--build-arg", "BUILDKIT_INLINE_CACHE=1", "${@}"
-]
-
-# notifier/batch 対応済み(2)
 [tasks.run-notifier]
 extend = "set-env-local"
-# dependencies = ["before-build", "start-chromedriver"]
 dependencies = ["before-build"]
 command = "cargo"
 args = ["run", "--release", "-p", "batch", "${@}"]
 
-
-# notifier/batch 対応済み(2)
 [tasks.run-server]
 extend = "set-env-local"
 dependencies = ["before-build"]
 command = "cargo"
-args = ["run", "-p", "server", "${@}"]
-
-# notifier/batch 対応済み(3)
-[tasks.run-notifier-in-docker]
-extend = "set-env-docker"
-dependencies = ["before-build", "compose-build-notifier"]
-command = "docker"
-args = ["compose", "up", "-d", "notifier"]
-
-# notifier/batch 対応済み(3)
-[tasks.run-batch-in-docker]
-extend = "set-env-docker"
-dependencies = ["before-build", "compose-build-notifier"]
-command = "docker"
-args = ["compose", "up", "-d", "batch"]
+args = ["run", "--release", "-p", "server", "${@}"]
 
 [tasks.logs]
 extend = "set-env-docker"
@@ -144,36 +108,6 @@ run_task = "test"
 
 
 ### Migration
-
-[tasks.compose-purge-db]
-extend = "set-env-local"
-script = '''
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Composeのプロジェクト名を決定（.envのCOMPOSE_PROJECT_NAMEが優先。なければカレントディレクトリ名）
-project="${COMPOSE_PROJECT_NAME:-$(basename "$PWD")}"
-vol="${project}_db"
-
-echo "==> Project: ${project}"
-echo "==> Target volume: ${vol}"
-
-# コンテナ停止＆削除（コンテナに紐づく匿名ボリュームも削除）
-docker compose stop postgres || true
-docker compose rm -f -v postgres || true
-
-# named volume(db)を削除
-if docker volume inspect "${vol}" >/dev/null 2>&1; then
-  echo "==> Removing volume ${vol}"
-  docker volume rm "${vol}"
-else
-  echo "==> Volume ${vol} not found (already removed?)"
-fi
-
-echo "==> Done."
-'''
-
-
 [tasks.migrate]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
@@ -200,17 +134,6 @@ args = [
   "postgres:15", "psql", "${DATABASE_URL}", "${@}"
 ]
 
-[tasks.initial-setup]
-extend = "set-env-local"
-command = "docker"
-args = [
-  "run", "-it", "--rm",
-  "--network", "host",
-  "-v", "${PWD}:/work",
-  "postgres:15", "psql", "${DATABASE_URL}",
-  "-f", "/work/data/initial_setup.sql"
-]
-
 
 ### Docker Compose
 
@@ -219,10 +142,12 @@ extend = "set-env-docker"
 command = "docker"
 args = ["compose", "${@}"]
 
+# healty になるまで待機する
+# これをつけないと DI コンテナ作成時にエラーが発生することがある
 [tasks.compose-up-chromedriver]
 extend = "set-env-docker"
 command = "docker"
-args = ["compose", "--profile", "selenium", "up", "-d"]
+args = ["compose", "--profile", "selenium", "up", "-d", "--wait"]
 
 [tasks.compose-up-db]
 extend = "set-env-docker"
@@ -232,7 +157,7 @@ args = ["compose", "up", "-d", "postgres"]
 [tasks.compose-down]
 extend = "set-env-docker"
 command = "docker"
-args = ["compose", "down"]
+args = ["compose", "down", "--profile", "selenium"]
 
 [tasks.compose-remove]
 extend = "set-env-docker"

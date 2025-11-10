@@ -9,6 +9,12 @@ x-selenium-common: &selenium-common
   restart: unless-stopped
 
 x-selenium-healthcheck: &selenium-healthcheck
+  healthcheck:
+    test: ["CMD-SHELL", "curl -sf http://localhost:4444/status | grep -q '\"ready\": true'" ]
+    interval: 5s
+    timeout: 5s
+    retries: 10
+    start_period: 15s
 
 services:
   postgres:
@@ -30,50 +36,26 @@ services:
       retries: 5
       start_period: 30s
 
-  selenium0: # health checkいれるぞ (後で) 
-    <<: *selenium-common
+  selenium0:
+    <<: [*selenium-common, *selenium-healthcheck]
     container_name: selenium0
     profiles: ["selenium"]
     ports: ["4444:4444", "7900:7900"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4444/status | grep -q '\"ready\":true'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
   selenium1:
-    <<: *selenium-common
+    <<: [*selenium-common, *selenium-healthcheck]
     profiles: ["selenium"]
     container_name: selenium1
     ports: ["4445:4444", "7901:7900"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4445/status | grep -q '\"ready\":true'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
   selenium2:
-    <<: *selenium-common
+    <<: [*selenium-common, *selenium-healthcheck]
     profiles: ["selenium"]
     container_name: selenium2
     ports: ["4446:4444", "7902:7900"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4446/status | grep -q '\"ready\":true'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
   selenium3:
-    <<: *selenium-common
+    <<: [*selenium-common, *selenium-healthcheck]
     profiles: ["selenium"]
     container_name: selenium3
     ports: ["4447:4444", "7903:7900"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4447/status | grep -q '\"ready\":true'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
 
 volumes:
   db:
