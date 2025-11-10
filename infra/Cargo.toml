@@ -21,3 +21,4 @@ thirtyfour.workspace = true
 tokio.workspace = true
 reqwest.workspace = true
 rss.workspace = true
+tracing.workspace = true

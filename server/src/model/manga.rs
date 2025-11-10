@@ -1,7 +1,10 @@
 use derive_new::new;
 use domain::{
     command::{CreateManga, UpdateManga},
-    manga::{Manga, MangaEpisode, MangaId, MangaShortTitle, MangaTitle},
+    manga::{
+        Manga, MangaEpisode, MangaId, MangaShortTitle, MangaTitle, portal::MangaPortal,
+        portal::manga_url::MangaUrl,
+    },
 };
 use serde::{Deserialize, Serialize};
 
@@ -10,8 +13,9 @@ use serde::{Deserialize, Serialize};
 pub struct CreateMangaRequest {
     pub title: String,
     pub short_title: String,
-    pub url: String,
     pub portal_kind: String,
+    pub crawl_url: String,
+    pub public_url: String,
 }
 
 impl TryFrom<CreateMangaRequest> for CreateManga {
@@ -19,11 +23,13 @@ impl TryFrom<CreateMangaRequest> for CreateManga {
 
     fn try_from(req: CreateMangaRequest) -> Result<Self, Self::Error> {
         let portal_kind = req.portal_kind.parse()?;
+        let crawl_url = req.crawl_url.parse()?;
+        let public_url = req.public_url.parse()?;
+        let portal = MangaPortal::new(portal_kind, crawl_url, public_url)?;
         Ok(CreateManga {
             title: MangaTitle::new(req.title),
             short_title: MangaShortTitle::new(req.short_title),
-            url: req.url.parse()?,
-            portal_kind,
+            portal,
         })
     }
 }
@@ -34,9 +40,10 @@ impl TryFrom<CreateMangaRequest> for CreateManga {
 pub struct UpdateMangaRequest {
     pub title: String,
     pub short_title: String,
-    pub url: String,
     pub episode: Option<String>,
     pub portal_kind: String,
+    pub crawl_url: String,
+    pub public_url: String,
 }
 
 // path parameter も含めて対応
@@ -51,23 +58,25 @@ impl TryFrom<UpdateMangaRequestWithId> for UpdateManga {
             UpdateMangaRequest {
                 title,
                 short_title,
-                url,
                 episode,
                 portal_kind,
+                crawl_url,
+                public_url,
             },
         ) = req_with_id;
         let portal_kind = portal_kind.parse()?;
         let title = MangaTitle::new(title);
         let short_title = MangaShortTitle::new(short_title);
         let episode = episode.map(MangaEpisode::new);
-        let url = url.parse()?;
+        let crawl_url = crawl_url.parse()?;
+        let public_url = public_url.parse()?;
+        let portal = MangaPortal::new(portal_kind, crawl_url, public_url)?;
         Ok(UpdateManga {
             manga_id,
             title,
             short_title,
-            url,
             episode,
-            portal_kind,
+            portal,
         })
     }
 }
@@ -78,9 +87,10 @@ pub struct MangaResponse {
     pub id: String,
     pub title: String,
     pub short_title: String,
-    pub url: String,
     pub episode: Option<String>,
     pub portal_kind: String,
+    pub crawl_url: String,
+    pub public_url: String,
 }
 
 impl From<Manga> for MangaResponse {
@@ -89,9 +99,10 @@ impl From<Manga> for MangaResponse {
             id: manga.id.to_string(),
             title: manga.title.inner_ref().to_string(),
             short_title: manga.short_title.inner_ref().to_string(),
-            url: manga.url.to_string(),
             episode: manga.episode.map(|ep| ep.inner_ref().to_string()),
-            portal_kind: manga.portal_kind.to_string(),
+            portal_kind: manga.portal.kind().to_string(),
+            crawl_url: manga.portal.get_crawl_url().to_string(),
+            public_url: manga.portal.get_public_url().to_string(),
         }
     }
 }

@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use derive_new::new;
 use domain::{
     command::{create_manga::CreateManga, delete_manga::DeleteManga, update_manga::UpdateManga},
-    manga::{Manga, repository::MangaRepository},
+    manga::{Manga, portal::manga_url::MangaUrl, repository::MangaRepository},
 };
 
 use crate::repository::{
@@ -23,13 +23,14 @@ impl MangaRepository for MangaRepositoryImpl {
     async fn create_manga(&self, command: CreateManga) -> Result<()> {
         sqlx::query!(
             r#"
-                INSERT INTO manga (title, short_title, url, portal_kind)
-                VALUES ($1, $2, $3, $4)
+                INSERT INTO manga (title, short_title, crawl_url, public_url, portal_kind)
+                VALUES ($1, $2, $3, $4, $5)
             "#,
             command.title.inner_ref(),
             command.short_title.inner_ref(),
-            command.url.as_str(),
-            PortalKindValue::from(command.portal_kind).inner(),
+            command.portal.get_crawl_url().as_str(),
+            command.portal.get_public_url().as_str(),
+            PortalKindValue::from(command.portal.kind()).inner(),
         )
         .execute(self.db.inner_ref())
         .await
@@ -45,15 +46,17 @@ impl MangaRepository for MangaRepositoryImpl {
                 SET 
                     title = $1,
                     short_title = $2,
-                    url = $3,
-                    portal_kind = $4,
-                    episode = $5
-                WHERE manga_id = $6
+                    crawl_url = $3,
+                    public_url = $4,
+                    portal_kind = $5,
+                    episode = $6
+                WHERE manga_id = $7
             "#,
             command.title.inner_ref(),
             command.short_title.inner_ref(),
-            command.url.as_str(),
-            PortalKindValue::from(command.portal_kind).inner(),
+            command.portal.get_crawl_url().as_str(),
+            command.portal.get_public_url().as_str(),
+            PortalKindValue::from(command.portal.kind()).inner(),
             command
                 .episode
                 .map_or("NULL".to_string(), |e| e.inner_ref().to_string()),
@@ -91,7 +94,7 @@ impl MangaRepository for MangaRepositoryImpl {
         let rows: Vec<MangaRow> = sqlx::query_as!(
             MangaRow,
             r#"
-                SELECT manga_id, title, short_title, url, portal_kind, episode
+                SELECT manga_id, title, short_title, crawl_url, public_url, portal_kind, episode
                 FROM manga
             "#
         )

@@ -18,7 +18,7 @@ impl YoungMagazineEpCrawler {
 #[async_trait::async_trait]
 impl EpCrawler for YoungMagazineEpCrawler {
     async fn crawl(&self, driver: &WebDriver) -> Result<MangaEpisode> {
-        driver.goto(self.command.manga_url.as_str()).await?;
+        driver.goto(self.command.crawl_url.as_str()).await?;
 
         let episode = driver
             .find(thirtyfour::By::Css(".mod-episode-title"))

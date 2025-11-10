@@ -20,7 +20,7 @@ impl EpCrawler for ComicFuzCrawler {
     async fn crawl(&self, driver: &WebDriver) -> Result<MangaEpisode> {
         // ComicFuz 用のクローリングロジックをここに実装する
 
-        driver.goto(self.command.manga_url.as_str()).await?;
+        driver.goto(self.command.crawl_url.as_str()).await?;
 
         let episode = driver
             .find(By::Css("h3[class^='Chapter_chapter__name']"))

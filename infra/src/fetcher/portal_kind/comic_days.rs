@@ -22,7 +22,7 @@ impl EpCrawler for ComicDaysCrawler {
         let response = {
             let mut retry_count = 0;
             loop {
-                match reqwest::get(self.command.manga_url.as_str()).await {
+                match reqwest::get(self.command.crawl_url.as_str()).await {
                     Ok(resp) => break resp,
                     Err(e) => {
                         retry_count += 1;

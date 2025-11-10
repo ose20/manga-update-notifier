@@ -23,7 +23,7 @@ impl EpCrawler for HerosWebCrawler {
         let response = {
             let mut retry_count = 0;
             loop {
-                match reqwest::get(self.command.manga_url.as_str()).await {
+                match reqwest::get(self.command.crawl_url.as_str()).await {
                     Ok(resp) => break resp,
                     Err(e) => {
                         retry_count += 1;
@@ -42,12 +42,12 @@ impl EpCrawler for HerosWebCrawler {
         let channel = rss::Channel::read_from(body.as_bytes())?;
         if let Some(first_item) = channel.items().first() {
             if let Some(title) = first_item.title() {
-                return Ok(MangaEpisode::new(title.to_string()));
+                Ok(MangaEpisode::new(title.to_string()))
             } else {
-                return Err(anyhow::anyhow!("No title found in the first RSS item"));
+                Err(anyhow::anyhow!("No title found in the first RSS item"))
             }
         } else {
-            return Err(anyhow::anyhow!("No items found in the RSS feed"));
+            Err(anyhow::anyhow!("No items found in the RSS feed"))
         }
     }
 }
