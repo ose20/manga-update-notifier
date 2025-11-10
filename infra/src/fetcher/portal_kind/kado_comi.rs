@@ -18,7 +18,7 @@ impl KadoComiEpCrawler {
 impl EpCrawler for KadoComiEpCrawler {
     async fn crawl(&self, driver: &thirtyfour::WebDriver) -> Result<MangaEpisode> {
         // KadoComi 用のクローリングロジックをここに実装する
-        driver.goto(self.command.manga_url.as_str()).await?;
+        driver.goto(self.command.crawl_url.as_str()).await?;
 
         let episode = driver
             .find(thirtyfour::By::Css(

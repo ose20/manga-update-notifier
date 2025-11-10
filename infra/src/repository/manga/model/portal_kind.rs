@@ -1,4 +1,4 @@
-use domain::manga::PortalKind;
+use domain::manga::portal::portal_kind::PortalKind;
 
 pub struct PortalKindValue(String);
 

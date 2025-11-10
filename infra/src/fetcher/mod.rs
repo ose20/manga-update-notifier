@@ -2,7 +2,7 @@ use anyhow::Result;
 use application::{
     command::FetchLatestEpCommand, port::latest_episode_fetcher::LatestEpisodeFetcher,
 };
-use domain::manga::{MangaEpisode, PortalKind};
+use domain::manga::{MangaEpisode, portal::portal_kind::PortalKind};
 use serenity::async_trait;
 
 use crate::fetcher::webdriverpool::DriverPool;

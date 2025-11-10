@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use domain::{
     event::{DetectFetchError, latest_ep_updated::DetectLastEpUpdated},
-    manga::Manga,
+    manga::{Manga, portal::manga_url::MangaUrl},
 };
 
 use crate::port::latest_episode_fetcher::LatestEpisodeFetcher;
@@ -18,7 +18,11 @@ where
         .fetch_latest_episode(manga.clone().into())
         .await
         .map_err(|e| {
-            DetectFetchError::new(manga.title.clone(), manga.url.clone(), e.to_string())
+            DetectFetchError::new(
+                manga.title.clone(),
+                manga.portal.get_public_url().clone(),
+                e.to_string(),
+            )
         })?;
 
     if manga.is_updated(&latest_ep) {
@@ -26,7 +30,7 @@ where
         Ok(Some((
             DetectLastEpUpdated {
                 title: update_manga.title.clone(),
-                url: update_manga.url.clone(),
+                url: update_manga.portal.get_public_url().clone(),
                 episode: latest_ep,
             },
             update_manga,

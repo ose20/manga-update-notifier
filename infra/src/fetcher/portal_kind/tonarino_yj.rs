@@ -1,10 +1,7 @@
-use std::time::Duration;
-
 use anyhow::Result;
 use application::command::FetchLatestEpCommand;
 use domain::manga::MangaEpisode;
 use thirtyfour::WebDriver;
-use tokio::time::sleep;
 
 use crate::fetcher::portal_kind::EpCrawler;
 
@@ -20,53 +17,35 @@ impl TonarinoYJCrawler {
 
 #[async_trait::async_trait]
 impl EpCrawler for TonarinoYJCrawler {
-    async fn crawl(&self, driver: &WebDriver) -> Result<MangaEpisode> {
-        driver.goto(self.command.manga_url.as_str()).await?;
-        let scrolling_script = r#"
-            // scroll down the page 10 times
-            const scrolls = 10
-            let scrollCount = 0
-
-            // scroll down and then wait for 0.5s
-            const scrollInterval = setInterval(() => {
-                window.scrollBy(0, document.body.scrollHeight / 15)
-                scrollCount++
-
-                if (scrollCount == scrolls) {
-                    clearInterval(scrollInterval)
+    async fn crawl(&self, _driver: &WebDriver) -> Result<MangaEpisode> {
+        let response = {
+            let mut retry_count = 0;
+            loop {
+                match reqwest::get(self.command.crawl_url.as_str()).await {
+                    Ok(resp) => break resp,
+                    Err(e) => {
+                        retry_count += 1;
+                        if retry_count >= 3 {
+                            return Err(anyhow::anyhow!(
+                                "Failed to fetch page after 3 retries: {}",
+                                e
+                            ));
+                        }
+                    }
                 }
-            }, 500)
-        "#;
+            }
+        };
 
-        driver.execute(scrolling_script, Vec::new()).await?;
-        sleep(Duration::from_millis(2000)).await;
-
-        // role="tablist"の要素をXPathで取得
-        let tablist = driver
-            .find(thirtyfour::By::XPath("//div[@role='tablist']"))
-            .await?;
-
-        // tablist内の最初のタブ (1つ目のdiv with role='tab') を取得
-        let first_tab = tablist
-            .find(thirtyfour::By::XPath(".//div[@role='tab'][1]"))
-            .await?;
-
-        // 1つ目のタブをクリック
-        first_tab.click().await?;
-
-        sleep(Duration::from_secs(2)).await;
-
-        let wrapper = driver
-            .find(thirtyfour::By::Css(
-                "div[class^='index-module--series-episode-list-title-wrapper']",
-            ))
-            .await?;
-        let episode = wrapper
-            .find(thirtyfour::By::Tag("h4"))
-            .await?
-            .text()
-            .await?;
-
-        Ok(MangaEpisode::new(episode))
+        let body = response.text().await?;
+        let channel = rss::Channel::read_from(body.as_bytes())?;
+        if let Some(first_item) = channel.items().first() {
+            if let Some(title) = first_item.title() {
+                Ok(MangaEpisode::new(title.to_string()))
+            } else {
+                Err(anyhow::anyhow!("No title found in the first RSS item"))
+            }
+        } else {
+            Err(anyhow::anyhow!("No items found in the RSS feed"))
+        }
     }
 }
