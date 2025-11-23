@@ -1,6 +1,7 @@
 [config]
 default_to_workspace = false
 
+# --- 環境変数 ---
 # トップレベル env は特別な意味を持つ
 # すべてのタスクで共通の環境変数として使われる
 [env]
@@ -31,41 +32,35 @@ DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?
 run_task = [
     { name = [
         "compose-up-db",
-        "compose-up-chromedriver",
         "migrate",
+    ] },
+]
+
+[tasks.before-run]
+dependencies = ["before-build"]
+run_task = [
+    { name = [
+        "compose-up-chromedriver",
     ] },
 ]
 
 [tasks.run-notifier]
 extend = "set-env-local"
-dependencies = ["before-build"]
+dependencies = ["before-run"]
 command = "cargo"
 args = ["run", "--release", "-p", "batch", "${@}"]
 
 [tasks.run-server]
 extend = "set-env-local"
-dependencies = ["before-build"]
+dependencies = ["before-run"]
 command = "cargo"
 args = ["run", "--release", "-p", "server", "${@}"]
 
-[tasks.logs]
-extend = "set-env-docker"
-dependencies = ["before-build"]
-command = "docker"
-args = ["compose", "logs", "${@}"]
-
 [tasks.build]
 extend = "set-env-local"
-dependencies = ["before-build"]
+dependencies = ["before-run"]
 command = "cargo"
 args = ["build", "${@}"]
-
-[tasks.check]
-extend = "set-env-local"
-dependencies = ["before-build"]
-command = "cargo"
-args = ["check"]
-
 
 ### Development
 
@@ -134,7 +129,6 @@ args = [
   "postgres:15", "psql", "${DATABASE_URL}", "${@}"
 ]
 
-
 ### Docker Compose
 
 [tasks.compose]
@@ -144,7 +138,7 @@ args = ["compose", "${@}"]
 
 # healty になるまで待機する
 # これをつけないと DI コンテナ作成時にエラーが発生することがある
-[tasks.compose-up-chromedriver]
+[tasks.compose-up]
 extend = "set-env-docker"
 command = "docker"
 args = ["compose", "--profile", "selenium", "up", "-d", "--wait"]
@@ -152,7 +146,7 @@ args = ["compose", "--profile", "selenium", "up", "-d", "--wait"]
 [tasks.compose-up-db]
 extend = "set-env-docker"
 command = "docker"
-args = ["compose", "up", "-d", "postgres"]
+args = ["compose", "up", "-d"]
 
 [tasks.compose-down]
 extend = "set-env-docker"
@@ -162,4 +156,4 @@ args = ["compose", "--profile", "selenium", "down"]
 [tasks.compose-remove]
 extend = "set-env-docker"
 command = "docker"
-args = ["compose", "down", "-v"]
+args = ["compose", "--profile", "selenium", "down", "-v"]

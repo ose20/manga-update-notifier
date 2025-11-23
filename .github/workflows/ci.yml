@@ -20,8 +20,6 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: nextest,cargo-make
-      - name: Tests compile
-        run: cargo make test-ci --no-run --locked
       - name: Test
         run: cargo make test-ci
       - name: Clippy
