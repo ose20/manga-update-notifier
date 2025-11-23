@@ -9,7 +9,7 @@ use crate::fetcher::portal_kind::EpCrawler;
 pub struct WebAceEpCrawler {
     command: FetchLatestEpCommand,
 }
- 
+
 impl WebAceEpCrawler {
     pub fn new(command: FetchLatestEpCommand) -> Self {
         Self { command }

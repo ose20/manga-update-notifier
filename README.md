@@ -1,4 +1,6 @@
 
+[![CI](https://github.com/ose20/manga-update-notifier/actions/workflows/ci.yml/badge.svg)](https://github.com/ose20/manga-update-notifier/actions/workflows/ci.yml)
+
 ## 動かし方
 
 
