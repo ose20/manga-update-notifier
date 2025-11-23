@@ -10,7 +10,7 @@ x-selenium-common: &selenium-common
 
 x-selenium-healthcheck: &selenium-healthcheck
   healthcheck:
-    test: ["CMD-SHELL", "curl -sf http://localhost:4444/status | grep -q '\"ready\": true'" ]
+    test: ["CMD-SHELL", "curl -sf http://localhost:4444/status > /dev/null" ]
     interval: 5s
     timeout: 5s
     retries: 10
@@ -36,6 +36,9 @@ services:
       retries: 5
       start_period: 30s
 
+  # profilesについて
+  ## profiles を付けていないサービスは常に対象
+  ## profiles を付けたサービスは、コマンド実行時などに指定された集合と、紐づけられた profile の集合の積が非空の場合にのみ対象
   selenium0:
     <<: [*selenium-common, *selenium-healthcheck]
     container_name: selenium0

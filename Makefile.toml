@@ -56,10 +56,11 @@ run_task = [
 ]
 
 [tasks.before-run]
-dependencies = ["before-build"]
+# 繰り返し使うと chromedriver の挙動が怪しくなるので毎回立ち上げ直す
+dependencies = ["compose-down", "before-build"]
 run_task = [
     { name = [
-        "compose-up-chromedriver",
+        "compose-up",
     ] },
 ]
 
