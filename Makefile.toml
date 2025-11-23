@@ -157,7 +157,7 @@ args = ["compose", "up", "-d", "postgres"]
 [tasks.compose-down]
 extend = "set-env-docker"
 command = "docker"
-args = ["compose", "down", "--profile", "selenium"]
+args = ["compose", "--profile", "selenium", "down"]
 
 [tasks.compose-remove]
 extend = "set-env-docker"
