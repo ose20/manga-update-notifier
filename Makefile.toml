@@ -27,23 +27,7 @@ DATABASE_HOST = "localhost"
 DATABASE_PORT = "${DATABASE_PORT_OUTER}"
 DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?user=${DATABASE_USERNAME}&password=${DATABASE_PASSWORD}&sslmode=disable"
 
-
-[tasks.before-build]
-run_task = [
-    { name = [
-        "compose-up-db",
-        "migrate",
-    ] },
-]
-
-[tasks.before-run]
-dependencies = ["before-build"]
-run_task = [
-    { name = [
-        "compose-up-chromedriver",
-    ] },
-]
-
+# --- Top Level Tasks ---
 [tasks.run-notifier]
 extend = "set-env-local"
 dependencies = ["before-run"]
@@ -62,8 +46,25 @@ dependencies = ["before-run"]
 command = "cargo"
 args = ["build", "${@}"]
 
-### Development
+# --- Auxiliary Tasks ---
+[tasks.before-build]
+run_task = [
+    { name = [
+        "compose-up-db",
+        "migrate",
+    ] },
+]
 
+[tasks.before-run]
+dependencies = ["before-build"]
+run_task = [
+    { name = [
+        "compose-up-chromedriver",
+    ] },
+]
+
+
+# --- Development ---
 [tasks.watch]
 extend = "set-env-local"
 dependencies = ["before-build"]
@@ -102,7 +103,7 @@ dependencies = ["before-build"]
 run_task = "test"
 
 
-### Migration
+# --- Migration ---
 [tasks.migrate]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
@@ -129,14 +130,14 @@ args = [
   "postgres:15", "psql", "${DATABASE_URL}", "${@}"
 ]
 
-### Docker Compose
 
+# --- Docker Compose ---
 [tasks.compose]
 extend = "set-env-docker"
 command = "docker"
 args = ["compose", "${@}"]
 
-# healty になるまで待機する
+# --wait で healty になるまで待機する
 # これをつけないと DI コンテナ作成時にエラーが発生することがある
 [tasks.compose-up]
 extend = "set-env-docker"
