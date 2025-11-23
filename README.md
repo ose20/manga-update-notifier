@@ -165,6 +165,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
     
 
 3. サーバーモードを終了する
+
 `Ctrl + C`などで終了する
 
 4. バッチモードを実行する
