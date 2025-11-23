@@ -209,6 +209,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 ```
 
 最新話が更新されると通知が来る(登録したばかりの漫画は最初は更新扱いになる)
+
 ![通知がされる様子](./image/screenshot-discord-notice.png)
 
 ## 未整備
