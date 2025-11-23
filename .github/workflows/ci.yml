@@ -15,7 +15,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Install Rust toolchain
         run: |
-          rust up toolchain install stable
+          rustup toolchain install stable
       - name: Install cargo-related tools
         uses: taiki-e/install-action@v2
         with:
