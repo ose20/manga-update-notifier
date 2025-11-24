@@ -1,7 +1,5 @@
 use anyhow::Result;
-use application::{
-    command::FetchLatestEpCommand, port::latest_episode_fetcher::LatestEpisodeFetcher,
-};
+use application::port::latest_episode_fetcher::{FetchLatestEpCommand, LatestEpisodeFetcher};
 use domain::manga::{MangaEpisode, portal::portal_kind::PortalKind};
 use serenity::async_trait;
 

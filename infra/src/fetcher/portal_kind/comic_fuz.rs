@@ -1,5 +1,5 @@
 use anyhow::Result;
-use application::command::FetchLatestEpCommand;
+use application::port::latest_episode_fetcher::FetchLatestEpCommand;
 use domain::manga::MangaEpisode;
 use thirtyfour::{By, WebDriver};
 
@@ -28,6 +28,6 @@ impl EpCrawler for ComicFuzCrawler {
             .text()
             .await?;
 
-        Ok(MangaEpisode::new(episode))
+        Ok(MangaEpisode::new(episode)?)
     }
 }

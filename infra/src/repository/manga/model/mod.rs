@@ -19,8 +19,8 @@ impl TryFrom<MangaRow> for domain::manga::Manga {
 
     fn try_from(row: MangaRow) -> Result<Self, Self::Error> {
         let id = domain::manga::id::MangaId::from(row.manga_id);
-        let title = domain::manga::MangaTitle::new(row.title);
-        let short_title = domain::manga::MangaShortTitle::new(row.short_title);
+        let title = domain::manga::MangaTitle::new(row.title)?;
+        let short_title = domain::manga::MangaShortTitle::new(row.short_title)?;
         // Todo: 他にもエラーなところがあったらまとめて教えてあげたい
         let crawl_url = url::Url::parse(&row.crawl_url)
             .map_err(|e| anyhow::anyhow!("Failed to parse URL: {}", e))?;
@@ -29,7 +29,10 @@ impl TryFrom<MangaRow> for domain::manga::Manga {
         let portal_kind = PortalKind::from_str(&row.portal_kind)
             .map_err(|e| anyhow::anyhow!("Failed to parse PortalKind: {}", e))?;
         let portal = MangaPortal::new(portal_kind, crawl_url, public_url)?;
-        let episode = row.episode.map(domain::manga::episode::MangaEpisode::new);
+        let episode = row
+            .episode
+            .map(domain::manga::episode::MangaEpisode::new)
+            .transpose()?;
 
         Ok(domain::manga::Manga {
             id,
