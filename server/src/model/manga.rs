@@ -1,10 +1,8 @@
 use derive_new::new;
-use domain::{
-    command::{CreateManga, UpdateManga},
-    manga::{
-        Manga, MangaEpisode, MangaId, MangaShortTitle, MangaTitle, portal::MangaPortal,
-        portal::manga_url::MangaUrl,
-    },
+use domain::manga::{
+    Manga, MangaEpisode, MangaId, MangaShortTitle, MangaTitle,
+    portal::{MangaPortal, manga_url::MangaUrl},
+    repository::{CreateManga, UpdateManga},
 };
 use serde::{Deserialize, Serialize};
 
@@ -27,8 +25,8 @@ impl TryFrom<CreateMangaRequest> for CreateManga {
         let public_url = req.public_url.parse()?;
         let portal = MangaPortal::new(portal_kind, crawl_url, public_url)?;
         Ok(CreateManga {
-            title: MangaTitle::new(req.title),
-            short_title: MangaShortTitle::new(req.short_title),
+            title: MangaTitle::new(req.title)?,
+            short_title: MangaShortTitle::new(req.short_title)?,
             portal,
         })
     }
@@ -65,9 +63,9 @@ impl TryFrom<UpdateMangaRequestWithId> for UpdateManga {
             },
         ) = req_with_id;
         let portal_kind = portal_kind.parse()?;
-        let title = MangaTitle::new(title);
-        let short_title = MangaShortTitle::new(short_title);
-        let episode = episode.map(MangaEpisode::new);
+        let title = MangaTitle::new(title)?;
+        let short_title = MangaShortTitle::new(short_title)?;
+        let episode = episode.map(MangaEpisode::new).transpose()?;
         let crawl_url = crawl_url.parse()?;
         let public_url = public_url.parse()?;
         let portal = MangaPortal::new(portal_kind, crawl_url, public_url)?;

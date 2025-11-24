@@ -242,12 +242,13 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
           - もしかして greceful shutdown してないから説ある？
         - run-notifier後でもcompose-downで消えないけど、そのあとrun-notifierしても別に困らない
           - run-notifier -> run-serverはいけるので、やっぱりgraceful shutdownしてないからかも
-- webdriverが起動しきる前にやってる
-2025-11-08T21:51:12.758363633+09:00 ERROR batch/src/main.rs:10: Application error: The WebDriver request returned an error: error sending request for url (http://localhost:4444/session)
-  - healthcheck設定してるけどうまくいってないっぽい
 - 最適化
   - rssを提供しているサイトはwebdriver使わないのでpoolから拝借しないようにできるとうれしい
-- rssタイプ
-  - 最新話をクロールする場所と、実際に最新話が乗っている場所が違う
 - テストさぼってるのでかく
 - 実際のcrawlのテストをする環境の整備
+- UIの提供
+- Errorをanyhowやめる
+  - 草案
+    - ApplicationErrorみたいなEnum型を作る
+      - その中のヴァリアントとして起こりうるすべてのエラーを適切な粒度で分類する
+      - そのError(Result?)にIntoResponseを実装して、サーバーモードのレスポンスに反映する

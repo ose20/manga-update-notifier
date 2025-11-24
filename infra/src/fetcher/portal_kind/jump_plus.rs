@@ -1,5 +1,5 @@
 use anyhow::Result;
-use application::command::FetchLatestEpCommand;
+use application::port::latest_episode_fetcher::FetchLatestEpCommand;
 use domain::manga::MangaEpisode;
 use thirtyfour::WebDriver;
 
@@ -40,12 +40,12 @@ impl EpCrawler for JumpPlusCrawler {
         let channel = rss::Channel::read_from(body.as_bytes())?;
         if let Some(first_item) = channel.items().first() {
             if let Some(title) = first_item.title() {
-                return Ok(MangaEpisode::new(title.to_string()));
+                Ok(MangaEpisode::new(title.to_string())?)
             } else {
-                return Err(anyhow::anyhow!("No title found in the first RSS item"));
+                Err(anyhow::anyhow!("No title found in the first RSS item"))
             }
         } else {
-            return Err(anyhow::anyhow!("No items found in the RSS feed"));
+            Err(anyhow::anyhow!("No items found in the RSS feed"))
         }
     }
 }

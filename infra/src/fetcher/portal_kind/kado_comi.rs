@@ -1,5 +1,5 @@
 use anyhow::Result;
-use application::command::FetchLatestEpCommand;
+use application::port::latest_episode_fetcher::FetchLatestEpCommand;
 use domain::manga::MangaEpisode;
 
 use crate::fetcher::portal_kind::EpCrawler;
@@ -30,6 +30,6 @@ impl EpCrawler for KadoComiEpCrawler {
             .text()
             .await?;
 
-        Ok(MangaEpisode::new(episode))
+        Ok(MangaEpisode::new(episode)?)
     }
 }

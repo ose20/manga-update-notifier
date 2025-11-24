@@ -1,9 +1,10 @@
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use derive_new::new;
-use domain::{
-    command::{create_manga::CreateManga, delete_manga::DeleteManga, update_manga::UpdateManga},
-    manga::{Manga, portal::manga_url::MangaUrl, repository::MangaRepository},
+use domain::manga::{
+    Manga,
+    portal::manga_url::MangaUrl,
+    repository::{CreateManga, DeleteManga, MangaRepository, UpdateManga},
 };
 
 use crate::repository::{
@@ -126,8 +127,8 @@ mod tests {
         let portal_kind = PortalKind::KadoComi;
         let portal = MangaPortal::new(portal_kind.clone(), crawl_url.clone(), public_url.clone())?;
         let create_command = CreateManga {
-            title: domain::manga::MangaTitle::new("Test Manga".to_string()),
-            short_title: domain::manga::MangaShortTitle::new("Test".to_string()),
+            title: domain::manga::MangaTitle::new("Test Manga".to_string())?,
+            short_title: domain::manga::MangaShortTitle::new("Test".to_string())?,
             portal,
         };
 
@@ -184,12 +185,12 @@ mod tests {
 
         let update_command = UpdateManga {
             manga_id: mangas[0].id.clone(),
-            title: domain::manga::MangaTitle::new(updated_title.clone()),
-            short_title: domain::manga::MangaShortTitle::new(updated_short_title.clone()),
+            title: domain::manga::MangaTitle::new(updated_title.clone())?,
+            short_title: domain::manga::MangaShortTitle::new(updated_short_title.clone())?,
             portal,
             episode: Some(domain::manga::episode::MangaEpisode::new(
                 updated_episode.clone(),
-            )),
+            )?),
         };
 
         repo.update_manga(update_command).await?;
