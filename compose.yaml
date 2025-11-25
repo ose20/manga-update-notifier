@@ -22,6 +22,8 @@ services:
     command: postgres -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on
     ports:
       - ${DATABASE_PORT_OUTER}:${DATABASE_PORT_INNER}
+    # データ永続化
+    # docker compose down でも docker rm <container> でも消えない
     volumes:
       - db:/var/lib/postgresql/data
     environment:

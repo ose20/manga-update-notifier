@@ -31,6 +31,13 @@
   - PostgreSQL、Seleniumの直接のインストールは不要
 - インストール方法
   - [公式リンク](https://docs.docker.com/compose/install/)から自身の環境に合わせて利用する
+- 永続化
+  - 漫画情報の永続化に使うPostgreSQLのデータはDockerの名前付きボリュームを使う
+  - このボリュームは例えば`docker compose down -v`などで明示的に消さないと消えない
+    - 通常の`docker compose down`や`docker rm <container>`では消えない
+    - 作成場所は例えば`/var/lib/docker/volumes`下
+    - リモートに常時稼働のDBを置くことでアプリ部分をステートレスに切り離せる
+      - このツールは気軽にローカルマシン1台で実行できることを優先する
 
 ### 必要なファイル
 本リポジトリのプロジェクトルートに以下の内容の`secret.env`というファイルを作成する
@@ -212,16 +219,10 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 
 ![通知がされる様子](./_docs/image/screenshot-discord-notice.png)
 
+## 詳細設計
+[Architecture.md](./_docs/Architecture.md)へ
+
 ## 未整備
-
-
-### memo
-- dbのpostgresもdockerで立てる
-- volumeを作ったので、containerが削除されてもデータが消えることはない
-    - 消えるのはdocker desktopを消したときかな？
-    - なので低頻度でsql dumpみたいなのをしてバックアップファイルを取っておくのがよさそう
-- rust-book-managerだとbin/app.rsでpoolの取得をしていたけど、これはregistryに任せていい気がする
-    - appConfigはapp全体の設定なのでapp.rsで取る必要性はわかる
 
 
 ### sqlx
