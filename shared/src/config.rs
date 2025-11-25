@@ -1,5 +1,6 @@
 use anyhow::Result;
 use thirtyfour::{ChromeCapabilities, ChromiumLikeCapabilities, DesiredCapabilities};
+use tracing::debug;
 
 #[derive(Debug)]
 pub struct AppConfig {
@@ -20,6 +21,8 @@ impl AppConfig {
             password: std::env::var("DATABASE_PASSWORD").expect("DATABASE_PASSWORD must be set"),
             database: std::env::var("DATABASE_NAME").expect("DATABASE_NAME must be set"),
         };
+
+        debug!("DatabaseConfig loaded: {:?}", database);
 
         let discord_notifier = if let Ok(val) = std::env::var("NOTIFY_DISCORD") {
             if val == "TRUE" {
