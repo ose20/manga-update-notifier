@@ -4,6 +4,7 @@
 
 登録したWeb漫画の更新状況をチェックし、更新されていれば適当な通知チャネルに報告をするツール。
 
+- [とにかく動かす](#とにかく動かす)
 - [1. 利用方法(for users)](#1-利用方法for-users)
   - [1.1. 必要なツール](#11-必要なツール)
     - [1.1.1. **Rust**](#111-rust)
@@ -17,6 +18,34 @@
 - [2. 使用例](#2-使用例)
 - [3. 詳細設計](#3-詳細設計)
 
+## とにかく動かす
+詳細な利用方法は次のセクションに任せ、ここではとりあえず動かす方法を示す。
+
+Rust、cargo-make、Dockerをinstallして、以下のように実行する
+```sh
+# 1. サーバーモード立ち上げ
+$ cargo make run-server
+
+# 2. 別タブを開いて追跡対象の漫画情報を登録
+$ curl -v -X POST "http://localhost:8000/mangas" \
+  -H "Content-Type: application/json" \
+  -d @- << 'EOF'
+{
+  "title": "ふつうの軽音部",
+  "shortTitle": "normal_keionbu",
+  "publicUrl": "https://shonenjumpplus.com/episode/16457717013869519536",
+  "crawlUrl": "https://shonenjumpplus.com/rss/series/14079602755590623793",
+  "portalKind": "JumpPlus"
+}
+EOF
+
+# 3. サーバーモードを Ctrl + C などで終了する
+
+# 4. バッチモードを実行する
+cargo make run-notifier-default
+
+# 5. 標準出力に最新話検知ログが出る(初回の実行ではかならず最新話更新)
+```
 
 ## 1. 利用方法(for users)
 ### 1.1. 必要なツール
