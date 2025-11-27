@@ -120,6 +120,7 @@ run_task = "test"
 
 
 # --- Migration ---
+# sqlx migrate add -r start --source infra/migrations でマイグレーションファイルを追加して設定を追加している前提
 [tasks.migrate]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }

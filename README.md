@@ -4,17 +4,31 @@
 
 登録したWeb漫画の更新状況をチェックし、更新されていれば適当な通知チャネルに報告をするツール。
 
-## 利用方法(for users)
-### 必要なツール
+- [1. 利用方法(for users)](#1-利用方法for-users)
+  - [1.1. 必要なツール](#11-必要なツール)
+    - [1.1.1. **Rust**](#111-rust)
+    - [1.1.2. **cargo-make**](#112-cargo-make)
+    - [1.1.3. **Docker**](#113-docker)
+  - [1.2. 必要なファイル](#12-必要なファイル)
+  - [1.3. Discord Botと通知先チャンネル](#13-discord-botと通知先チャンネル)
+  - [1.4. 実行方法](#14-実行方法)
+    - [1.4.1. サーバーモード](#141-サーバーモード)
+    - [1.4.2. バッチモード](#142-バッチモード)
+- [2. 使用例](#2-使用例)
+- [3. 詳細設計](#3-詳細設計)
+
+
+## 1. 利用方法(for users)
+### 1.1. 必要なツール
 以下のツールがインストールされていることを前提とする。
 
-#### **Rust**
+#### 1.1.1. **Rust**
 - 概要
   - 本プログラムがRustで書かれており、それをコンパイル&実行する必要があるため
 - インストール方法
   - [公式で案内されている方法](https://rust-lang.org/tools/install/)などを用いてインストールする（一瞬&簡単）
 
-#### **cargo-make**
+#### 1.1.2. **cargo-make**
 - 概要
   - 本ツールのタスクランナーとして利用している
   - コンテナの管理、2つのバイナリモードの実行、環境変数の設定、各種タスク間の依存関係の整理などを主にやっている
@@ -24,7 +38,7 @@
   cargo install cargo-make
   ```
 
-#### **Docker**
+#### 1.1.3. **Docker**
 - 概要
   - 検知対象の漫画情報を永続化するRDB(PostgresSQL)やWebクロールに使うSeleniumなどのミドルウェアはDocker Composeで管理する
     - そのため、`docker compose`コマンドが使える環境を想定する
@@ -39,7 +53,7 @@
     - リモートに常時稼働のDBを置くことでアプリ部分をステートレスに切り離せる
       - このツールは気軽にローカルマシン1台で実行できることを優先する
 
-### 必要なファイル
+### 1.2. 必要なファイル
 本リポジトリのプロジェクトルートに以下の内容の`secret.env`というファイルを作成する
 ```sh
 DISCORD_BOT_TOKEN="${利用者のDiscordのBotトークン}"
@@ -48,7 +62,7 @@ DISCORD_ERR_CHANNEL_ID="${エラーの送信に使うチャンネルのID}"
 ```
 ここで必要な情報の取得方法は次節で解説する。
 
-### Discord Botと通知先チャンネル
+### 1.3. Discord Botと通知先チャンネル
 本ツールでは通知にDiscordを使っているので、その通知を担うDiscord Botと、それが通知に使うチャンネルが必要になる。
 - Discord Botの作成とTokenの取得
   - [公式ドキュメント](https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#adding-bot-permissions)の`Creating an app on Discord`のセクションを参考に、Discordのアプリケーションアカウント(bot)を作成する
@@ -61,20 +75,20 @@ DISCORD_ERR_CHANNEL_ID="${エラーの送信に使うチャンネルのID}"
 
 以上の手順により、前節のファイル作成に必要な3つのデータが取得できた。
 
-### 実行方法
-#### サーバーモード
+### 1.4. 実行方法
+#### 1.4.1. サーバーモード
 追跡対象の漫画情報の作成、編集、削除ができるAPIサーバーを立ち上げるモードは次のコマンドで実行する。
 ```sh
 cargo make run-server
 ```
 
-#### バッチモード
+#### 1.4.2. バッチモード
 DBに登録された漫画の更新状況を調べて、更新があったら通知をするワンショットのプログラムを実行する。
 ```sh
 cargo make run-notifier
 ```
 
-## 使用例
+## 2. 使用例
 1. サーバーモードで起動
 ```sh
 # 実行例
@@ -219,37 +233,5 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 
 ![通知がされる様子](./_docs/image/screenshot-discord-notice.png)
 
-## 詳細設計
+## 3. 詳細設計
 [Architecture.md](./_docs/Architecture.md)へ
-
-## 未整備
-
-
-### sqlx
-- cargo make migrate
-  - sqlx-cli のサブコマンド migrate を使ってマイグレーションファイルを使って、データベースにスキーマ情報などを登録している
-- sqlx migrate add -r start --source adapter/migrations
-
-
-## Todo
-- registryの調整
-  - 起動するバイナリによって必要な要素が違うことの反映
-    - 特に server 起動するときに chromedriver を起動したくない
-- ↑の問題を解決する前にselenium container消えない問題の原因究明
-  - run-hoge したあとに compose-down しても selenium が消えず、docker rm -f しないといけないのはなぜ
-    - 上の問題解決しちゃっても大丈夫かも
-      - だめだ
-        - run-notifier2連続は大丈夫だけどrun-server -> run-notifierだと registry が作れない
-          - もしかして greceful shutdown してないから説ある？
-        - run-notifier後でもcompose-downで消えないけど、そのあとrun-notifierしても別に困らない
-          - run-notifier -> run-serverはいけるので、やっぱりgraceful shutdownしてないからかも
-- 最適化
-  - rssを提供しているサイトはwebdriver使わないのでpoolから拝借しないようにできるとうれしい
-- テストさぼってるのでかく
-- 実際のcrawlのテストをする環境の整備
-- UIの提供
-- Errorをanyhowやめる
-  - 草案
-    - ApplicationErrorみたいなEnum型を作る
-      - その中のヴァリアントとして起こりうるすべてのエラーを適切な粒度で分類する
-      - そのError(Result?)にIntoResponseを実装して、サーバーモードのレスポンスに反映する

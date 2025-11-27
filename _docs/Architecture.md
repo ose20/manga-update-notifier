@@ -39,8 +39,7 @@
 
 ![オニオンアーキテクチャベース](./image/arch.png)
 
-## アーキテクチャ詳細
-### 各レイヤーの責務
+## 各レイヤーの責務
 - domain層
   - ドメインモデルを扱う
   - 集約は漫画漫画だけ
@@ -87,8 +86,49 @@
 # CI/CD
 利用してる道具視点で記述する
 - docker compose
+  - 複数のdockerコンテナを管理するためのツール
+  - `compose.yaml`で管理
+  - データ永続化のためのpostgresと、ブラウザ操作のためのseleniumコンテナを管理する
 - cargo make
-- github actions
+  - Rust製のタスクランナー
+  - tomlでタスクを定義する
+  - `Makefile.toml`で管理
+  - 依存コンテナの管理や環境変数の設定などを楽にする
+- GitHub Actions
+  - [ci.yml](../.github/workflows/ci.yml)で定義
+  - 各種テストを自動で実行
+
+# Roadmap/今後やりたいこと
+- registryの調整
+  - 起動するバイナリによって必要な要素が違うことの反映
+    - 特に server 起動するときに chromedriver を起動したくない
+- ↑の問題を解決する前にselenium container消えない問題の原因究明
+  - run-hoge したあとに compose-down しても selenium が消えず、docker rm -f しないといけないのはなぜ
+    - 上の問題解決しちゃっても大丈夫かも
+      - だめだ
+        - run-notifier1連続は大丈夫だけどrun-server -> run-notifierだと registry が作れない
+          - もしかして greceful shutdown してないから説ある？
+        - run-notifier後でもcompose-downで消えないけど、そのあとrun-notifierしても別に困らない
+          - run-notifier -> run-serverはいけるので、やっぱりgraceful shutdownしてないからかも
+- 最適化
+  - rssを提供しているサイトはwebdriver使わないのでpoolから拝借しないようにできるとうれしい
+- テストさぼってるのでかく
+- 実際のcrawlのテストをする環境の整備
+- UIの提供
+- Errorをanyhowやめる
+  - 草案
+    - ApplicationErrorみたいなEnum型を作る
+      - その中のヴァリアントとして起こりうるすべてのエラーを適切な粒度で分類する
+      - そのError(Result?)にIntoResponseを実装して、サーバーモードのレスポンスに反映する
+- 使えるnotiferオプションをstdioにすればsecret.env用意しなくてもすぐできるようになる
+  - README.mdの最初にQuickGuideとしておいておけると嬉しいのでやる
+
+
+### sqlx
+- cargo make migrate
+  - sqlx-cli のサブコマンド migrate を使ってマイグレーションファイルを使って、データベースにスキーマ情報などを登録している
+- sqlx migrate add -r start --source adapter/migrations
+
 
 
 # Appendix
