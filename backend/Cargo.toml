@@ -1,0 +1,47 @@
+# cargo run -p notifier などで実行する
+# [package] セクションがない仮想 workspace としている
+[workspace]
+resolver = "2"
+members = ["application", "batch", "domain", "infra", "registry", "server", "shared"]
+
+[workspace.package]
+edition = "2024"
+publish = false
+license = "MIT"
+
+# プロジェクトルートであるこの階層ですべて?の依存を定義する
+# 各メンバーモジュールはこの一覧から on/off を選択することでバージョンなどを一括で揃えられる
+[workspace.dependencies]
+application = { path = "./application" }
+batch = { path = "./batch" }
+domain = { path = "./domain" }
+infra = { path = "./infra" }
+registry = { path = "./registry" }
+server = { path = "./server" }
+shared = { path = "./shared" }
+
+axum = { version = "0.7.5", features = ["macros"] }
+axum-extra = { version = "0.9.3", features = ["typed-header"] }
+anyhow = "1.0.89"
+async-trait = "0.1.74"
+chrono = { version = "0.4.26", default-features = false, features = ["serde"] }
+clap = { version = "4.5", features = ["derive"] }
+derive-new = "0.6.0"
+dotenv = "0.15"
+futures = "0.3"
+serde = { version = "1.0.174", features = ["derive"] }
+serde_json = "1.0.96"
+serenity = { version = "0.12.2", features = ["client", "rustls_backend"] }
+sqlx = { version = "0.8.2", features = ["uuid", "macros", "postgres", "migrate", "runtime-tokio" ] }
+thirtyfour = "0.34.0"
+tokio = { version = "1.40.0", features = ["rt", "macros", "full"] }
+tokio-stream = "0.1.14"
+tower = { version = "0.4.13", features = ["util"] }
+tower-http = { version = "0.5.0", features = ["trace", "cors"] }
+reqwest = { version = "0.12", features = ["rustls-tls"] }
+rss = "2"
+uuid = { version = "1.4", features = ["v4", "serde"] }
+url = "2.5"
+mockall = "0.11.4"
+tracing = "0.1.39"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json", "time", "chrono"] }
