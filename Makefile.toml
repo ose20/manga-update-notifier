@@ -31,6 +31,7 @@ DATABASE_URL = "postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?
 [tasks.run-notifier]
 extend = "set-env-local"
 dependencies = ["before-run"]
+cwd = "./backend"
 #script = '''
 #echo "[run-notifier-default] env check"
 #echo "HOST=${HOST}"
@@ -52,6 +53,7 @@ run_task = "run-notifier"
 [tasks.run-server]
 extend = "set-env-local"
 dependencies = ["before-run"]
+cwd = "./backend"
 command = "cargo"
 args = ["run", "--release", "-p", "server", "${@}"]
 
@@ -84,17 +86,20 @@ run_task = [
 [tasks.watch]
 extend = "set-env-local"
 dependencies = ["before-build"]
+cwd = "./backend"
 run_task = [{ name = ["fmt", "clippy", "test"] }]
 watch = true
 
 [tasks.fmt]
 extend = "set-env-local"
+cwd = "./backend"
 command = "cargo"
 args = ["fmt", "--all", "${@}"]
 
 [tasks.clippy]
 extend = "set-env-local"
 command = "cargo"
+cwd = "./backend"
 args = ["clippy", "--all", "--all-targets", "${@}"]
 
 [tasks.test]
@@ -102,6 +107,7 @@ extend = "set-env-local"
 install_crate = { crate_name = "cargo-nextest", binary = "cargo", test_arg = [
   "nextest", "--help",
 ] }
+cwd = "./backend"
 command = "cargo"
 args = [
   "nextest", "run", "--workspace",
@@ -111,11 +117,13 @@ args = [
 [tasks.clippy-ci]
 extend = "set-env-local"
 dependencies = ["before-build"]
+cwd = "./backend"
 command = "cargo"
 args = ["clippy", "--", "--no-deps", "-Dwarnings"]
 
 [tasks.test-ci]
 dependencies = ["before-build"]
+cwd = "./backend"
 run_task = "test"
 
 
@@ -124,6 +132,7 @@ run_task = "test"
 [tasks.migrate]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
+cwd = "./backend"
 script = '''
 #!/bin/bash
 until sqlx migrate run --source infra/migrations; do
@@ -134,6 +143,7 @@ done
 [tasks.sqlx]
 extend = "set-env-local"
 install_crate = { crate_name = "sqlx-cli", binary = "sqlx", test_arg = "--help", version = "0.7.3" }
+cwd = "./backend"
 command = "sqlx"
 args = ["${@}", "--source", "infra/migrations"]
 

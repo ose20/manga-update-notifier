@@ -1,0 +1,41 @@
+/* nodeで動かす環境用のもの */
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    /* 自分で入れたやつ */
+    // 相対パスじゃない import は src を起点にする
+    "baseUrl": "./src",
+    // `@/`で`src/`を参照できるようにする
+    // ↑この説明はかなり下手
+    // @/* を * にマッピングするというのが正しいせつめい
+    // そのうえで、 baseUrl の設定をあわせると src/* になる(最初の説明は理解させる気がない)
+    // 例 import { Foo } from '@/components/Foo' は src/components/Foo からインポートする
+    // Vite 側の設定と対応していることが大事
+    // 両者がそろって初めてエディタの補完/ジャンプが効いたり、ビルドが成功したりする
+    "paths": {
+      "@/*": ["*"]
+    },
+  },
+  "include": ["vite.config.ts"]
+}
