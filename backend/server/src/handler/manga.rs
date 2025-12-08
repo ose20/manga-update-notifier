@@ -49,7 +49,7 @@ pub async fn delete_manga(
         .await
         .map_err(into_500)?;
 
-    Ok(StatusCode::OK)
+    Ok(StatusCode::NO_CONTENT)
 }
 
 pub async fn list_mangas(
