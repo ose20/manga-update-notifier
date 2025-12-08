@@ -1,10 +1,10 @@
 <mxfile host="65bd71144e">
     <diagram id="GMZB_qt3V8xPHa_AlqqJ" name="Page-1">
-        <mxGraphModel dx="1023" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1106" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="69" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeWidth=3;" parent="1" source="5" target="2" edge="1">
+                <mxCell id="69" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=3;" parent="1" source="5" target="2" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="320" y="560"/>
@@ -24,11 +24,12 @@
                 <mxCell id="5" value="&lt;h2&gt;server&lt;/h2&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="260" y="50" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="70" style="edgeStyle=none;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeWidth=3;" parent="1" source="6" target="2" edge="1">
+                <mxCell id="70" style="edgeStyle=none;html=1;strokeWidth=3;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="6" target="2" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="520" y="550"/>
                         </Array>
+                        <mxPoint x="520" y="630" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="74" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=3;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="6" target="8" edge="1">
@@ -115,16 +116,28 @@
                     <mxGeometry x="80" y="550" width="180" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="39" value="&lt;h2&gt;&lt;b&gt;domain&lt;/b&gt;&lt;/h2&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="340" y="730" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="260" y="760" width="340" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="2" value="&lt;h2&gt;&lt;b&gt;domain&lt;/b&gt;&lt;/h2&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="340" y="640" width="180" height="30" as="geometry"/>
+                    <mxGeometry x="260" y="640" width="340" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="15" value="model" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="340" y="670" width="90" height="60" as="geometry"/>
+                    <mxGeometry x="260" y="700" width="90" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="repository" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="430" y="670" width="90" height="60" as="geometry"/>
+                    <mxGeometry x="350" y="700" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="78" value="&lt;h2&gt;集約&lt;/h2&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="260" y="670" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="&lt;h2&gt;集約&lt;/h2&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="430" y="670" width="170" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="repository" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="700" width="80" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="model" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="430" y="700" width="90" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
