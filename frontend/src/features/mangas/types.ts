@@ -8,6 +8,8 @@ export const PORTAL_KINDS = [
   'ComicDays',
   'ComicFuz',
   'ComicZenon',
+  'MangaOne',
+  'MagComi',
 ] as const;
 
 export type PortalKind = (typeof PORTAL_KINDS)[number];

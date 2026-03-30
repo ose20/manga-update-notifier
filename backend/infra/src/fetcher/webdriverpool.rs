@@ -48,6 +48,10 @@ impl Drop for Lease<'_> {
 
 impl DriverPool {
     pub async fn new(config: WebdriverConfig) -> WebDriverResult<Self> {
+        assert!(
+            !config.endpoints.is_empty(),
+            "WebDriver endpoints must not be empty"
+        );
         let mut q = VecDeque::with_capacity(config.endpoints.len());
         for ep in config.endpoints.iter() {
             q.push_back(WebDriver::new(ep.to_string(), config.chrome_caps.clone()).await?);
