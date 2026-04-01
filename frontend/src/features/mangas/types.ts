@@ -10,6 +10,10 @@ export const PORTAL_KINDS = [
   'ComicZenon',
   'MangaOne',
   'MagComi',
+  'ChampionCross',
+  'GawGawMonster',
+  'TakeComi',
+  'YoungChampion',
 ] as const;
 
 export type PortalKind = (typeof PORTAL_KINDS)[number];

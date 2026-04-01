@@ -74,10 +74,12 @@ impl LatestEpisodeFetcher for LatestEpisodeFetcherImpl {
                 let crawler = portal_kind::mag_comi::MagComiCrawler::new(command);
                 self.webdriver_pool.with_driver(crawler).await
             }
-            PortalKind::ChampionCross => rss_fetcher::crawl_ep_from_rss(command.crawl_url).await,
             PortalKind::GawGawMonster => {
                 let crawler = portal_kind::gawgaw_monster::GawGawMonster::new(command);
                 self.webdriver_pool.with_driver(crawler).await
+            }
+            PortalKind::ChampionCross | PortalKind::TakeComi | PortalKind::YoungChampion => {
+                rss_fetcher::crawl_ep_from_rss(command.crawl_url).await
             }
         }
     }

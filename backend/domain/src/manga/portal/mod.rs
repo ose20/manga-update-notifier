@@ -25,6 +25,8 @@ pub enum MangaPortal {
     MagComi(SplitUrl),
     ChampionCross(SplitUrl),
     GawGawMonster(SameUrl),
+    TakeComi(SplitUrl),
+    YoungChampion(SplitUrl),
 }
 
 impl MangaPortal {
@@ -63,6 +65,10 @@ impl MangaPortal {
                 check_same_url(crawl.clone(), public)?;
                 MangaPortal::GawGawMonster(SameUrl::new(crawl))
             }
+            PortalKind::TakeComi => MangaPortal::TakeComi(SplitUrl::new(crawl, public).unwrap()),
+            PortalKind::YoungChampion => {
+                MangaPortal::YoungChampion(SplitUrl::new(crawl, public).unwrap())
+            }
         };
         Ok(v)
     }
@@ -82,6 +88,8 @@ impl MangaPortal {
             MangaPortal::MagComi(_) => PortalKind::MagComi,
             MangaPortal::ChampionCross(_) => PortalKind::ChampionCross,
             MangaPortal::GawGawMonster(_) => PortalKind::GawGawMonster,
+            MangaPortal::TakeComi(_) => PortalKind::TakeComi,
+            MangaPortal::YoungChampion(_) => PortalKind::YoungChampion,
         }
     }
 }
@@ -97,7 +105,9 @@ impl MangaUrl for MangaPortal {
             | MangaPortal::ComicDays(url)
             | MangaPortal::ComicZenon(url)
             | MangaPortal::ChampionCross(url)
-            | MangaPortal::MagComi(url) => url.get_crawl_url(),
+            | MangaPortal::MagComi(url)
+            | MangaPortal::TakeComi(url)
+            | MangaPortal::YoungChampion(url) => url.get_crawl_url(),
             MangaPortal::KadoComi(url)
             | MangaPortal::YoungMagazine(url)
             | MangaPortal::ComicFuz(url)
@@ -116,7 +126,9 @@ impl MangaUrl for MangaPortal {
             | MangaPortal::ComicDays(url)
             | MangaPortal::ComicZenon(url)
             | MangaPortal::ChampionCross(url)
-            | MangaPortal::MagComi(url) => url.get_public_url(),
+            | MangaPortal::MagComi(url)
+            | MangaPortal::TakeComi(url)
+            | MangaPortal::YoungChampion(url) => url.get_public_url(),
             MangaPortal::KadoComi(url)
             | MangaPortal::YoungMagazine(url)
             | MangaPortal::ComicFuz(url)
