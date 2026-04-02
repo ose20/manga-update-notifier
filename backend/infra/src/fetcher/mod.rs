@@ -6,6 +6,7 @@ use serenity::async_trait;
 use crate::fetcher::webdriverpool::DriverPool;
 
 pub mod portal_kind;
+pub mod rss_fetcher;
 pub mod webdriverpool;
 
 pub struct LatestEpisodeFetcherImpl {
@@ -64,6 +65,21 @@ impl LatestEpisodeFetcher for LatestEpisodeFetcherImpl {
             PortalKind::ComicZenon => {
                 let crawler = portal_kind::comic_zenon::ComicDaysCrawler::new(command);
                 crawler.crawl().await
+            }
+            PortalKind::MangaOne => {
+                let crawler = portal_kind::manga_one::MangaOneEpCrawler::new(command);
+                self.webdriver_pool.with_driver(crawler).await
+            }
+            PortalKind::MagComi => {
+                let crawler = portal_kind::mag_comi::MagComiCrawler::new(command);
+                self.webdriver_pool.with_driver(crawler).await
+            }
+            PortalKind::GawGawMonster => {
+                let crawler = portal_kind::gawgaw_monster::GawGawMonster::new(command);
+                self.webdriver_pool.with_driver(crawler).await
+            }
+            PortalKind::ChampionCross | PortalKind::TakeComi | PortalKind::YoungChampion => {
+                rss_fetcher::crawl_ep_from_rss(command.crawl_url).await
             }
         }
     }

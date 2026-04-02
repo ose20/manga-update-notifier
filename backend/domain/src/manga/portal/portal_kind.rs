@@ -12,6 +12,12 @@ pub enum PortalKind {
     ComicDays,
     ComicFuz,
     ComicZenon,
+    MangaOne,
+    MagComi,
+    ChampionCross,
+    GawGawMonster,
+    TakeComi,
+    YoungChampion,
 }
 
 // 考察:
@@ -33,6 +39,12 @@ impl FromStr for PortalKind {
             "ComicDays" => Ok(PortalKind::ComicDays),
             "ComicFuz" => Ok(PortalKind::ComicFuz),
             "ComicZenon" => Ok(PortalKind::ComicZenon),
+            "MangaOne" => Ok(PortalKind::MangaOne),
+            "MagComi" => Ok(PortalKind::MagComi),
+            "ChampionCross" => Ok(PortalKind::ChampionCross),
+            "GawGawMonster" => Ok(PortalKind::GawGawMonster),
+            "TakeComi" => Ok(PortalKind::TakeComi),
+            "YoungChampion" => Ok(PortalKind::YoungChampion),
             _ => Err(anyhow::anyhow!("Unknown portal kind: {}", s)),
         }
     }
@@ -53,6 +65,12 @@ impl std::fmt::Display for PortalKind {
             PortalKind::ComicDays => "ComicDays",
             PortalKind::ComicFuz => "ComicFuz",
             PortalKind::ComicZenon => "ComicZenon",
+            PortalKind::MangaOne => "MangaOne",
+            PortalKind::MagComi => "MagComi",
+            PortalKind::ChampionCross => "ChampionCross",
+            PortalKind::GawGawMonster => "GawGawMonster",
+            PortalKind::TakeComi => "TakeComi",
+            PortalKind::YoungChampion => "YoungChampion",
         };
         write!(f, "{}", s)
     }

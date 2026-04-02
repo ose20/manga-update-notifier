@@ -21,6 +21,12 @@ pub enum MangaPortal {
     ComicDays(SplitUrl),
     ComicFuz(SameUrl),
     ComicZenon(SplitUrl),
+    MangaOne(SameUrl),
+    MagComi(SplitUrl),
+    ChampionCross(SplitUrl),
+    GawGawMonster(SameUrl),
+    TakeComi(SplitUrl),
+    YoungChampion(SplitUrl),
 }
 
 impl MangaPortal {
@@ -29,41 +35,39 @@ impl MangaPortal {
             PortalKind::WebAce => MangaPortal::WebAce(SplitUrl::new(crawl, public)?),
             PortalKind::KimiComi => MangaPortal::KimiComi(SplitUrl::new(crawl, public)?),
             PortalKind::KadoComi => {
-                if crawl != public {
-                    return Err(anyhow::anyhow!(
-                        "For KadoComi, crawl URL and public URL must be the same: {}, {}",
-                        crawl,
-                        public
-                    ));
-                }
+                check_same_url(crawl.clone(), public)?;
                 MangaPortal::KadoComi(SameUrl::new(crawl))
             }
             PortalKind::TonarinoYJ => MangaPortal::Tonarino(SplitUrl::new(crawl, public)?),
             PortalKind::HerosWeb => MangaPortal::HerosWeb(SplitUrl::new(crawl, public)?),
             PortalKind::JumpPlus => MangaPortal::JumpPlus(SplitUrl::new(crawl, public)?),
             PortalKind::YoungMagazine => {
-                if crawl != public {
-                    return Err(anyhow::anyhow!(
-                        "For YoungMagazine, crawl URL and public URL must be the same: {}, {}",
-                        crawl,
-                        public
-                    ));
-                }
+                check_same_url(crawl.clone(), public)?;
                 MangaPortal::YoungMagazine(SameUrl::new(crawl))
             }
             PortalKind::ComicDays => MangaPortal::ComicDays(SplitUrl::new(crawl, public).unwrap()),
             PortalKind::ComicFuz => {
-                if crawl != public {
-                    return Err(anyhow::anyhow!(
-                        "For ComicFuz, crawl URL and public URL must be the same: {}, {}",
-                        crawl,
-                        public
-                    ));
-                }
+                check_same_url(crawl.clone(), public)?;
                 MangaPortal::ComicFuz(SameUrl::new(crawl))
             }
             PortalKind::ComicZenon => {
                 MangaPortal::ComicZenon(SplitUrl::new(crawl, public).unwrap())
+            }
+            PortalKind::MangaOne => {
+                check_same_url(crawl.clone(), public)?;
+                MangaPortal::MangaOne(SameUrl::new(crawl))
+            }
+            PortalKind::MagComi => MangaPortal::MagComi(SplitUrl::new(crawl, public).unwrap()),
+            PortalKind::ChampionCross => {
+                MangaPortal::ChampionCross(SplitUrl::new(crawl, public).unwrap())
+            }
+            PortalKind::GawGawMonster => {
+                check_same_url(crawl.clone(), public)?;
+                MangaPortal::GawGawMonster(SameUrl::new(crawl))
+            }
+            PortalKind::TakeComi => MangaPortal::TakeComi(SplitUrl::new(crawl, public).unwrap()),
+            PortalKind::YoungChampion => {
+                MangaPortal::YoungChampion(SplitUrl::new(crawl, public).unwrap())
             }
         };
         Ok(v)
@@ -80,6 +84,12 @@ impl MangaPortal {
             MangaPortal::ComicDays(_) => PortalKind::ComicDays,
             MangaPortal::ComicFuz(_) => PortalKind::ComicFuz,
             MangaPortal::ComicZenon(_) => PortalKind::ComicZenon,
+            MangaPortal::MangaOne(_) => PortalKind::MangaOne,
+            MangaPortal::MagComi(_) => PortalKind::MagComi,
+            MangaPortal::ChampionCross(_) => PortalKind::ChampionCross,
+            MangaPortal::GawGawMonster(_) => PortalKind::GawGawMonster,
+            MangaPortal::TakeComi(_) => PortalKind::TakeComi,
+            MangaPortal::YoungChampion(_) => PortalKind::YoungChampion,
         }
     }
 }
@@ -93,10 +103,16 @@ impl MangaUrl for MangaPortal {
             | MangaPortal::HerosWeb(url)
             | MangaPortal::JumpPlus(url)
             | MangaPortal::ComicDays(url)
-            | MangaPortal::ComicZenon(url) => url.get_crawl_url(),
+            | MangaPortal::ComicZenon(url)
+            | MangaPortal::ChampionCross(url)
+            | MangaPortal::MagComi(url)
+            | MangaPortal::TakeComi(url)
+            | MangaPortal::YoungChampion(url) => url.get_crawl_url(),
             MangaPortal::KadoComi(url)
             | MangaPortal::YoungMagazine(url)
-            | MangaPortal::ComicFuz(url) => url.get_crawl_url(),
+            | MangaPortal::ComicFuz(url)
+            | MangaPortal::GawGawMonster(url)
+            | MangaPortal::MangaOne(url) => url.get_crawl_url(),
         }
     }
 
@@ -108,10 +124,28 @@ impl MangaUrl for MangaPortal {
             | MangaPortal::HerosWeb(url)
             | MangaPortal::JumpPlus(url)
             | MangaPortal::ComicDays(url)
-            | MangaPortal::ComicZenon(url) => url.get_public_url(),
+            | MangaPortal::ComicZenon(url)
+            | MangaPortal::ChampionCross(url)
+            | MangaPortal::MagComi(url)
+            | MangaPortal::TakeComi(url)
+            | MangaPortal::YoungChampion(url) => url.get_public_url(),
             MangaPortal::KadoComi(url)
             | MangaPortal::YoungMagazine(url)
-            | MangaPortal::ComicFuz(url) => url.get_public_url(),
+            | MangaPortal::ComicFuz(url)
+            | MangaPortal::GawGawMonster(url)
+            | MangaPortal::MangaOne(url) => url.get_public_url(),
         }
+    }
+}
+
+fn check_same_url(crawl: Url, public: Url) -> Result<()> {
+    if crawl != public {
+        Err(anyhow::anyhow!(
+            "crawl URL and public URL must be the same: {}, {}",
+            crawl,
+            public
+        ))
+    } else {
+        Ok(())
     }
 }
